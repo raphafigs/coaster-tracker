@@ -1,0 +1,15 @@
+{
+  "name": "Coaster & Park Tracker",
+  "short_name": "CoasterTracker",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#2a472a",
+  "theme_color": "#6f8c4f",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CoasterTracker">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="manifest" href="manifest.json">
+  <title>Coaster & Park Tracker — @raphafigs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    @font-face {
+      font-family: 'RCT2';
+      src: url(data:font/opentype;charset=utf-8;base64,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OgAvAC8AZgBvAG4AdABzAHQAcgB1AGMAdAAuAGMAbwBtAC8AZgBvAG4AdABzAHQAcgB1AGMAdABvAHIAcwAvAHMAaABvAHcALwA0ADIANwAyADUAMwAvAHEAaQBtAHAAbABlAGYAKQBSAEMAVAAyACAATABhAHQAaQBuACAARQB4AHQAZQBuAGQAZQBkAFIAZQBnAHUAbABhAHIAUgBDAFQAMgAgAEwAYQB0AGkAbgAgAEUAeAB0AGUAbgBkAGUAZABSAEMAVAAyACAATABhAHQAaQBuACAARQB4AHQAZQBuAGQAZQBkACAAUgBlAGcAdQBsAGEAcgBWAGUAcgBzAGkAbwBuACAAMQAuADAAUgBDAFQAMgBMAGEAdABpAG4ARQB4AHQAZQBuAGQAZQBkAEYAbwBuAHQAUwB0AHIAdQBjAHQAIABpAHMAIABhACAAdAByAGEAZABlAG0AYQByAGsAIABvAGYAIABGAG8AbgB0AFMAdAByAHUAYwB0AC4AYwBvAG0AaAB0AHQAcABzADoALwAvAGYAbwBuAHQAcwB0AHIAdQBjAHQALgBjAG8AbQBEAGUAcwB0AGkAcyAcAFIAQwBUADIAIABMAGEAdABpAG4AIABFAHgAdABlAG4AZABlAGQgHQAgAHcAYQBzACAAYgB1AGkAbAB0ACAAdwBpAHQAaAAgAEYAbwBuAHQAUwB0AHIAdQBjAHQACgBEAGUAcwBpAGcAbgBlAHIAIABkAGUAcwBjAHIAaQBwAHQAaQBvAG4AOgAgADwAcAA+AE8AcgBpAGcAaQBuAGEAbAAgAGYAbwBuAHQAIABtAGEAZABlACAAYgB5ACYAbgBiAHMAcAA7AFEAaQBtAHAAbABlAGYAIABhAHQAJgBuAGIAcwBwADsAaAB0AHQAcABzADoALwAvAGYAbwBuAHQAcwB0AHIAdQBjAHQALgBjAG8AbQAvAGYAbwBuAHQAcwB0AHIAdQBjAHQAaQBvAG4AcwAvAHMAaABvAHcALwA0ADYANQAxADIANQAvAHIAYwB0ADIALgA8AGIAcgAgAC8APgAKAEkAIABzAGkAbQBwAGwAeQAgAGEAZABkAGUAZAAgAG0AbwByAGUAIABjAGgAYQByAGEAYw0AGUAcgBzAC4APAAvAHAAPgAKIBwAUgBDAFQAMiAdACAAYgB5ACAgHABRAGkAbQBwAGwAZQBmIB0AIAAoAGgAdAB0AHAAcwA6AC8ALwBmAG8AbgB0AHMAdAByAHUAYwB0AC4AYwBvAG0ALwBmAG8AbgB0AHMAdAByAHUAYwB0AG8AcgBzAC8AcwBoAG8AdwAvADQAMgA3ADIANQAzAC8AcQBpAG0AcABsAGUAZgApAGgAdAB0AHAAcwA6AC8ALwBmAG8AbgB0AHMAdAByAHUAYwB0AC4AYwBvAG0ALwBmAG8AbgB0AHMAdAByAHUAYwB0AGkAbwBuAHMALwBzAGgAbwB3AC8AMQA1ADYAOQA3ADkANwAvAHIAYwB0ADIALQAzAGgAdAB0AHAAcwA6AC8ALwBmAG8AbgB0AHMAdAByAHUAYwB0AC4AYwBvAG0ALwBmAG8AbgB0AHMAdAByAHUAYwB0AG8AcgBzAC8AcwBoAG8AdwAvADEAMwAyADIAOAA1ADEALwBkAGUAcwB0AGkAcwBDAHIAZQBhAHQAaQB2AGUAIABDAG8AbQBtAG8AbgBzACAAQQB0AHQAcgBpAGIAdQB0AGkAbwBuACAAUwBoAGEAcgBlACAAQQBsAGkAawBlAGgAdAB0AHAAOgAvAC8AYwByAGUAYQB0AGkAdgBlAGMAbwBtAG0AbwBuAHMALgBvAHIAZwAvAGwAaQBjAGUAbgBzAGUAcwAvAGIAeQAtAHMAYQAvADMALgAwAC8ARgBpAHYAZQAgAGIAaQBnACAAcQB1AGEAYwBrAGkAbgBnACAAegBlAHAAaAB5AHIAcwAgAGoAbwBsAHQAIABtAHkAIAB3AGEAeAAgAGIAZQBkAEEAdwB3AE8AZgBGADUAdABXAFEAPQA9Q29weXJpZ2h0IERlc3RpcyAyMDE40lJDVDLTIGJ5INJRaW1wbGVm0yAoaHR0cHM6Ly9mb250c3RydWN0LmNvbS9mb250c3RydWN0b3JzL3Nob3cvNDI3MjUzL3FpbXBsZWYpUkNUMiBMYXRpbiBFeHRlbmRlZFJlZ3VsYXJSQ1QyIExhdGluIEV4dGVuZGVkUkNUMiBMYXRpbiBFeHRlbmRlZCBSZWd1bGFyVmVyc2lvbiAxLjBSQ1QyTGF0aW5FeHRlbmRlZEZvbnRTdHJ1Y3QgaXMgYSB0cmFkZW1hcmsgb2YgRm9udFN0cnVjdC5jb21odHRwczovL2ZvbnRzdHJ1Y3QuY29tRGVzdGlz0lJDVDIgTGF0aW4gRXh0ZW5kZWTTIHdhcyBidWlsdCB3aXRoIEZvbnRTdHJ1Y3REZXNpZ25lciBkZXNjcmlwdGlvbjogPHA+T3JpZ2luYWwgZm9udCBtYWRlIGJ5Jm5ic3A7UWltcGxlZiBhdCZuYnNwO2h0dHBzOi8vZm9udHN0cnVjdC5jb20vZm9udHN0cnVjdGlvbnMvc2hvdy80NjUxMjUvcmN0Mi48YnIgLz5JIHNpbXBseSBhZGRlZCBtb3JlIGNoYXJhY3RlcnMuPC9wPtJSQ1Qy0yBieSDSUWltcGxlZtMgKGh0dHBzOi8vZm9udHN0cnVjdC5jb20vZm9udHN0cnVjdG9ycy9zaG93LzQyNzI1My9xaW1wbGVmKWh0dHBzOi8vZm9udHN0cnVjdC5jb20vZm9udHN0cnVjdGlvbnMvc2hvdy8xNTY5Nzk3L3JjdDItM2h0dHBzOi8vZm9udHN0cnVjdC5jb20vZm9udHN0cnVjdG9ycy9zaG93LzEzMjI4NTEvZGVzdGlzQ3JlYXRpdmUgQ29tbW9ucyBBdHRyaWJ1dGlvbiBTaGFyZSBBbGlrZWh0dHA6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL2xpY2Vuc2VzL2J5LXNhLzMuMC9GaXZlIGJpZyBxdWFja2luZyB6ZXBoeXJzIGpvbHQgbXkgd2F4IGJlZEF3d09mRjV0V1E9PQBDAG8AcAB5AHIAaQBnAGgAdAAgAEQAZQBzAHQAaQBzACAAMgAwADEAOAAKIBwAUgBDAFQAMiAdACAAYgB5ACAgHABRAGkAbQBwAGwAZQBmIB0AIAAoAGgAdAB0AHAAcwA6AC8ALwBmAG8AbgB0AHMAdAByAHUAYwB0AC4AYwBvAG0ALwBmAG8AbgB0AHMAdAByAHUAYwB0AG8AcgBzAC8AcwBoAG8AdwAvADQAMgA3ADIANQAzAC8AcQBpAG0AcABsAGUAZgApAFIAQwBUADIAIABMAGEAdABpAG4AIABFAHgAdABlAG4AZABlAGQAUgBlAGcAdQBsAGEAcgBSAEMAVAAyACAATABhAHQAaQBuACAARQB4AHQAZQBuAGQAZQBkAFIAQwBUADIAIABMAGEAdABpAG4AIABFAHgAdABlAG4AZABlAGQAIABSAGUAZwB1AGwAYQByAFYAZQByAHMAaQBvAG4AIAAxAC4AMABSAEMAVAAyAEwAYQB0AGkAbgBFAHgAdABlAG4AZABlAGQARgBvAG4AdABTAHQAcgB1AGMAdAAgAGkAcwAgAGEAIAB0AHIAYQBkAGUAbQBhAHIAawAgAG8AZgAgAEYAbwBuAHQAUwB0AHIAdQBjAHQALgBjAG8AbQBoAHQAdABwAHMAOgAvAC8AZgBvAG4AdABzAHQAcgB1AGMAdAAuAGMAbwBtAEQAZQBzAHQAaQBzIBwAUgBDAFQAMgAgAEwAYQB0AGkAbgAgAEUAeAB0AGUAbgBkAGUAZCAdACAAdwBhAHMAIABiAHUAaQBsAHQAIAB3AGkAdABoACAARgBvAG4AdABTAHQAcgB1AGMAdAAKAEQAZQBzAGkAZwBuAGUAcgAgAGQAZQBzAGMAcgBpAHAAdABpAG8AbgA6ACAAPABwAD4ATwByAGkAZwBpAG4AYQBsACAAZgBvAG4AdAAgAG0AYQBkAGUAIABiAHkAJgBuAGIAcwBwADsAUQBpAG0AcABsAGUAZgAgAGEAdAAmAG4AYgBzAHAAOwBoAHQAdABwAHMAOgAvAC8AZgBvAG4AdABzAHQAcgB1AGMAdAAuAGMAbwBtAC8AZgBvAG4AdABzAHQAcgB1AGMAdABpAG8AbgBzAC8AcwBoAG8AdwAvADQANgA1ADEAMgA1AC8AcgBjAHQAMgAuADwAYgByACAALwA+AAoASQAgAHMAaQBtAHAAbAB5ACAAYQBkAGQAZQBkACAAbQBvAHIAZQAgAGMAaABhAHIAYQBjAHQAZQByAHMALgA8AC8AcAA+AAogHABSAEMAVAAyIB0AIABiAHkAICAcAFEAaQBtAHAAbABlAGYgHQAgACgAaAB0AHQAcABzADoALwAvAGYAbwBuAHQAcwB0AHIAdQBjAHQALgBjAG8AbQAvAGYAbwBuAHQAcwB0AHIAdQBjAHQAbwByAHMALwBzAGgAbwB3AC8ANAAyADcAMgA1ADMALwBxAGkAbQBwAGwAZQBmACkAaAB0AHQAcABzADoALwAvAGYAbwBuAHQAcwB0AHIAdQBjAHQALgBjAG8AbQAvAGYAbwBuAHQAcwB0AHIAdQBjAHQAaQBvAG4AcwAvAHMAaABvAHcALwAxADUANgA5ADcAOQA3AC8AcgBjAHQAMgAtADMAaAB0AHQAcABzADoALwAvAGYAbwBuAHQAcwB0AHIAdQBjAHQALgBjAG8AbQAvAGYAbwBuAHQAcwB0AHIAdQBjAHQAbwByAHMALwBzAGgAbwB3AC8AMQAzADIAMgA4ADUAMQAvAGQAZQBzAHQAaQBzAEMAcgBlAGEAdABpAHYAZQAgAEMAbwBtAG0AbwBuAHMAIABBAHQAdAByAGkAYgB1AHQAaQBvAG4AIABTAGgAYQByAGUAIABBAGwAaQBrAGUAaAB0AHQAcAA6AC8ALwBjAHIAZQBhAHQAaQB2AGUAYwBvAG0AbQBvAG4AcwAuAG8AcgBnAC8AbABpAGMAZQBuAHMAZQBzAC8AYgByAC0AcwBhAC8AMwAuADAALwBGAGkAdgBlACAAYgBpAGcAIABxAHUAYQBjAGsAaQBuAGcAIAB6AGUAcABoAHkAcgBzACAAagBvAGwAdAAgAG0AeQAgAHcAYQB4ACAAYgBlAGQAQQB3AHcATwBmAEYANQB0AFcAUQA9AD0AAAAAAwAAAAAAAADIAGQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAA) format('opentype');
+      font-weight: normal;
+      font-style: normal;
+      size-adjust: 165%;
+    }
+
+    :root {
+      --rct-bg: #2a472a;
+      --rct-title: #36423f;
+      --rct-title-light: #546661;
+      --rct-title-dark: #1d2422;
+      --rct-red: #9b4e4c;
+      --rct-red-light: #bd706e;
+      --rct-red-dark: #632c2a;
+      --rct-red-inset: #823e3c;
+      --rct-blue: #798594;
+      --rct-blue-light: #9ba7b5;
+      --rct-blue-dark: #4a535e;
+      --rct-blue-inset: #657180;
+      --rct-green: #6f8c4f;
+      --rct-green-light: #9cb87b;
+      --rct-green-dark: #44592c;
+      --rct-green-inset: #5d7840;
+    }
+
+    body {
+      background-color: var(--rct-bg);
+      background-image:
+        linear-gradient(rgba(0,0,0,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.08) 1px, transparent 1px);
+      background-size: 20px 20px;
+      color: #ffffff;
+      font-family: Tahoma, Verdana, "Segoe UI", sans-serif;
+    }
+
+    .font-rct {
+      font-family: 'RCT2', 'Silkscreen', monospace;
+      letter-spacing: 0.5px;
+    }
+
+    .rct-shadow-txt { text-shadow: 1px 1px 0px #000000; }
+
+    .px-icon {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      vertical-align: middle;
+      image-rendering: pixelated;
+      flex-shrink: 0;
+    }
+
+    .rct-win-red {
+      background-color: var(--rct-red);
+      border-top: 2px solid var(--rct-red-light);
+      border-left: 2px solid var(--rct-red-light);
+      border-right: 2px solid var(--rct-red-dark);
+      border-bottom: 2px solid var(--rct-red-dark);
+      box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.5);
+    }
+
+    .rct-win-blue {
+      background-color: var(--rct-blue);
+      border-top: 2px solid var(--rct-blue-light);
+      border-left: 2px solid var(--rct-blue-light);
+      border-right: 2px solid var(--rct-blue-dark);
+      border-bottom: 2px solid var(--rct-blue-dark);
+      box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.5);
+    }
+
+    .rct-win-green {
+      background-color: var(--rct-green);
+      border-top: 2px solid var(--rct-green-light);
+      border-left: 2px solid var(--rct-green-light);
+      border-right: 2px solid var(--rct-green-dark);
+      border-bottom: 2px solid var(--rct-green-dark);
+      box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.5);
+    }
+
+    .rct-titlebar {
+      background-color: var(--rct-title);
+      color: #ffffff;
+      text-shadow: 1px 1px 0px #000000;
+      border-bottom: 2px solid var(--rct-title-dark);
+    }
+
+    .rct-close {
+      background-color: #798594;
+      color: #111;
+      font-weight: bold;
+      width: 20px;
+      height: 20px;
+      line-height: 16px;
+      text-align: center;
+      font-size: 12px;
+      border-top: 2px solid #9ba7b5;
+      border-left: 2px solid #9ba7b5;
+      border-right: 2px solid #4a535e;
+      border-bottom: 2px solid #4a535e;
+      cursor: pointer;
+    }
+    .rct-close:active {
+      border-top: 2px solid #4a535e;
+      border-left: 2px solid #4a535e;
+      border-right: 2px solid #9ba7b5;
+      border-bottom: 2px solid #9ba7b5;
+    }
+
+    .rct-inset-red {
+      background-color: var(--rct-red-inset);
+      border-top: 2px solid var(--rct-red-dark);
+      border-left: 2px solid var(--rct-red-dark);
+      border-right: 2px solid var(--rct-red-light);
+      border-bottom: 2px solid var(--rct-red-light);
+    }
+    .rct-inset-blue {
+      background-color: var(--rct-blue-inset);
+      border-top: 2px solid var(--rct-blue-dark);
+      border-left: 2px solid var(--rct-blue-dark);
+      border-right: 2px solid var(--rct-blue-light);
+      border-bottom: 2px solid var(--rct-blue-light);
+    }
+    .rct-inset-green {
+      background-color: var(--rct-green-inset);
+      border-top: 2px solid var(--rct-green-dark);
+      border-left: 2px solid var(--rct-green-dark);
+      border-right: 2px solid var(--rct-green-light);
+      border-bottom: 2px solid var(--rct-green-light);
+    }
+
+    .rct-input {
+      background-color: #e9ecf0;
+      color: #111827;
+      border-top: 2px solid #36423f;
+      border-left: 2px solid #36423f;
+      border-right: 2px solid #cbd5e1;
+      border-bottom: 2px solid #cbd5e1;
+      outline: none;
+    }
+    .rct-input:focus { background-color: #ffffff; }
+
+    .rct-btn {
+      background-color: #798594;
+      color: #ffffff;
+      text-shadow: 1px 1px 0px #000;
+      border-top: 2px solid #9ba7b5;
+      border-left: 2px solid #9ba7b5;
+      border-right: 2px solid #4a535e;
+      border-bottom: 2px solid #4a535e;
+      cursor: pointer;
+    }
+    .rct-btn:active {
+      border-top: 2px solid #4a535e;
+      border-left: 2px solid #4a535e;
+      border-right: 2px solid #9ba7b5;
+      border-bottom: 2px solid #9ba7b5;
+      transform: translate(1px, 1px);
+    }
+
+    .rct-btn-red {
+      background-color: var(--rct-red);
+      color: #ffffff;
+      text-shadow: 1px 1px 0px #000;
+      border-top: 2px solid var(--rct-red-light);
+      border-left: 2px solid var(--rct-red-light);
+      border-right: 2px solid var(--rct-red-dark);
+      border-bottom: 2px solid var(--rct-red-dark);
+      cursor: pointer;
+    }
+    .rct-btn-green {
+      background-color: var(--rct-green);
+      color: #ffffff;
+      text-shadow: 1px 1px 0px #000;
+      border-top: 2px solid var(--rct-green-light);
+      border-left: 2px solid var(--rct-green-light);
+      border-right: 2px solid var(--rct-green-dark);
+      border-bottom: 2px solid var(--rct-green-dark);
+      cursor: pointer;
+    }
+
+    .rct-tab {
+      background-color: #535e6b;
+      color: #d1d5db;
+      border-top: 2px solid #758291;
+      border-left: 2px solid #758291;
+      border-right: 2px solid #323942;
+      border-bottom: 2px solid #323942;
+      cursor: pointer;
+    }
+    .rct-tab-active-red {
+      background-color: var(--rct-red);
+      color: #ffffff;
+      text-shadow: 1px 1px 0px #000;
+      border-top: 2px solid var(--rct-red-light);
+      border-left: 2px solid var(--rct-red-light);
+      border-right: 2px solid var(--rct-red-dark);
+      border-bottom: 2px solid var(--rct-red);
+      margin-bottom: -2px;
+      z-index: 5;
+    }
+    .rct-tab-active-blue {
+      background-color: var(--rct-blue);
+      color: #ffffff;
+      text-shadow: 1px 1px 0px #000;
+      border-top: 2px solid var(--rct-blue-light);
+      border-left: 2px solid var(--rct-blue-light);
+      border-right: 2px solid var(--rct-blue-dark);
+      border-bottom: 2px solid var(--rct-blue);
+      margin-bottom: -2px;
+      z-index: 5;
+    }
+
+    .leaflet-popup-content-wrapper {
+      background: var(--rct-blue);
+      color: #ffffff;
+      border-top: 2px solid var(--rct-blue-light);
+      border-left: 2px solid var(--rct-blue-light);
+      border-right: 2px solid var(--rct-blue-dark);
+      border-bottom: 2px solid var(--rct-blue-dark);
+      border-radius: 0px;
+      box-shadow: 3px 3px 0px rgba(0,0,0,0.5);
+    }
+    .leaflet-popup-tip { background: var(--rct-blue); }
+  </style>
+</head>
+<body class="min-h-screen pb-10">
+
+  <!-- Barra Superior estilo Toolbar do RCT2 -->
+  <header class="rct-win-green sticky top-0 z-20" style="padding-top: env(safe-area-inset-top);">
+    <div class="max-w-[1600px] mx-auto px-3 md:px-4 pt-2.5 pb-2 flex flex-wrap items-center justify-between gap-2.5">
+      <div class="flex flex-wrap items-center gap-3 md:gap-5">
+        <div>
+          <h1 class="font-rct text-sm md:text-base font-bold text-white rct-shadow-txt">Coaster &amp; Park Tracker</h1>
+          <a href="https://www.instagram.com/raphafigs" target="_blank" class="text-[11px] text-[#e2f0d5] hover:text-[#fde047] rct-shadow-txt transition">@raphafigs</a>
+        </div>
+
+        <nav class="flex gap-1.5">
+          <button id="mainBtnMR" onclick="trocarAbaMae('mr')" class="font-rct rct-btn-red px-3 py-1.5 text-xs flex items-center gap-1.5">
+            <svg class="px-icon" viewBox="0 0 16 16" fill="none"><path d="M1 12h14v2H1v-2zm2-3h2v3H3V9zm8-4h2v7h-2V5zM7 7h2v5H7V7z" fill="#2b1414"/><path d="M1 11l3-3 3-1 3-3 4 2v2l-4-2-3 3-3 1-3 2v-1z" fill="#facc15"/><rect x="8" y="2" width="4" height="3" fill="#ef4444"/><rect x="9" y="1" width="2" height="1" fill="#fde047"/></svg>
+            Montanhas-Russas
+          </button>
+          <button id="mainBtnParques" onclick="trocarAbaMae('parques')" class="font-rct rct-btn px-3 py-1.5 text-xs flex items-center gap-1.5">
+            <svg class="px-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="5" width="3" height="9" fill="#d4c4a8"/><rect x="11" y="5" width="3" height="9" fill="#d4c4a8"/><path d="M1 5l7-4 7 4v2H1V5z" fill="#b84437"/><rect x="6" y="7" width="4" height="7" fill="#36423f"/><rect x="7" y="2" width="2" height="2" fill="#facc15"/></svg>
+            Parques
+          </button>
+        </nav>
+      </div>
+
+      <button id="btnAcaoTopo" onclick="abrirModalCadastroAtual()" class="font-rct rct-btn-red text-xs px-3 py-1.5 flex items-center gap-1.5">
+        <svg class="px-icon" viewBox="0 0 16 16" fill="none"><rect x="7" y="2" width="2" height="12" fill="#fff"/><rect x="2" y="7" width="12" height="2" fill="#fff"/></svg>
+        <span id="txtBtnTopo">Nova Montanha-Russa</span>
+      </button>
+    </div>
+
+    <!-- Sub-abas Montanhas-Russas -->
+    <div id="subNavMR" class="max-w-[1600px] mx-auto px-3 md:px-4 flex gap-1 text-xs font-bold overflow-x-auto pt-1">
+      <button id="tabBtnCatalogo" onclick="trocarSubAbaMR('catalogo')" class="rct-tab-active-red px-3 py-1.5 whitespace-nowrap flex items-center gap-1.5">
+        <svg class="px-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" fill="#e5e7eb"/><rect x="4" y="4" width="8" height="2" fill="#36423f"/><rect x="4" y="7" width="8" height="2" fill="#36423f"/><rect x="4" y="10" width="5" height="2" fill="#36423f"/></svg>
+        Catálogo
+      </button>
+      <button id="tabBtnRankings" onclick="trocarSubAbaMR('rankings')" class="rct-tab px-3 py-1.5 whitespace-nowrap flex items-center gap-1.5">
+        <svg class="px-icon" viewBox="0 0 16 16" fill="none"><path d="M4 2h8v5a4 4 0 01-8 0V2z" fill="#facc15"/><rect x="7" y="10" width="2" height="3" fill="#ca8a04"/><rect x="5" y="13" width="6" height="2" fill="#a16207"/></svg>
+        Rankings (Top 50 &amp; Brasil)
+      </button>
+      <button id="tabBtnEstatisticas" onclick="trocarSubAbaMR('estatisticas')" class="rct-tab px-3 py-1.5 whitespace-nowrap flex items-center gap-1.5">
+        <svg class="px-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="9" width="3" height="5" fill="#4ade80"/><rect x="6" y="5" width="3" height="9" fill="#facc15"/><rect x="10" y="2" width="3" height="12" fill="#38bdf8"/></svg>
+        Estatísticas &amp; Mapa
+      </button>
+    </div>
+
+    <!-- Sub-abas Parques -->
+    <div id="subNavParques" class="hidden max-w-[1600px] mx-auto px-3 md:px-4 flex gap-1 text-xs font-bold overflow-x-auto pt-1">
+      <button id="tabBtnParquesCatalogo" onclick="trocarSubAbaParques('catalogo')" class="rct-tab-active-blue px-3 py-1.5 whitespace-nowrap flex items-center gap-1.5">
+        <svg class="px-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" fill="#e5e7eb"/><rect x="4" y="4" width="8" height="2" fill="#36423f"/><rect x="4" y="7" width="8" height="2" fill="#36423f"/><rect x="4" y="10" width="5" height="2" fill="#36423f"/></svg>
+        Catálogo
+      </button>
+      <button id="tabBtnParquesRankings" onclick="trocarSubAbaParques('rankings')" class="rct-tab px-3 py-1.5 whitespace-nowrap flex items-center gap-1.5">
+        <svg class="px-icon" viewBox="0 0 16 16" fill="none"><path d="M4 2h8v5a4 4 0 01-8 0V2z" fill="#facc15"/><rect x="7" y="10" width="2" height="3" fill="#ca8a04"/><rect x="5" y="13" width="6" height="2" fill="#a16207"/></svg>
+        Rankings (Top 50)
+      </button>
+      <button id="tabBtnParquesEstatisticas" onclick="trocarSubAbaParques('estatisticas')" class="rct-tab px-3 py-1.5 whitespace-nowrap flex items-center gap-1.5">
+        <svg class="px-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="9" width="3" height="5" fill="#4ade80"/><rect x="6" y="5" width="3" height="9" fill="#facc15"/><rect x="10" y="2" width="3" height="12" fill="#38bdf8"/></svg>
+        Estatísticas &amp; Mapa
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-[1600px] mx-auto px-3 md:px-4 py-5">
+    <div id="loading" class="rct-win-green max-w-md mx-auto mt-10 overflow-hidden">
+      <div class="rct-titlebar px-3 py-1.5 font-rct text-xs text-center">Carregando Cenário</div>
+      <div class="p-5 text-center">
+        <p class="font-rct text-xs text-white rct-shadow-txt">Sincronizando dados do Google Sheets...</p>
+      </div>
+    </div>
+
+    <!-- MÓDULO 1: MONTANHAS-RUSSAS -->
+    <div id="moduloMR" class="hidden">
+      <div id="viewCatalogo" class="hidden space-y-4">
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="rct-win-green p-3"><span class="font-rct text-[10px] uppercase text-[#e2f0d5] rct-shadow-txt">Montanhas-Russas</span><p id="kpiTotal" class="font-rct text-2xl md:text-3xl font-bold text-[#fde047] rct-shadow-txt mt-1">0</p></div>
+          <div class="rct-win-green p-3"><span class="font-rct text-[10px] uppercase text-[#e2f0d5] rct-shadow-txt">Parques Visitados</span><p id="kpiParques" class="font-rct text-2xl md:text-3xl font-bold text-[#86efac] rct-shadow-txt mt-1">0</p></div>
+          <div class="rct-win-green p-3"><span class="font-rct text-[10px] uppercase text-[#e2f0d5] rct-shadow-txt">Países</span><p id="kpiPaises" class="font-rct text-2xl md:text-3xl font-bold text-white rct-shadow-txt mt-1">0</p></div>
+          <div class="rct-win-green p-3"><span class="font-rct text-[10px] uppercase text-[#e2f0d5] rct-shadow-txt">Média Geral</span><p id="kpiMediaGeral" class="font-rct text-2xl md:text-3xl font-bold text-[#fca5a5] rct-shadow-txt mt-1">0,000</p></div>
+        </section>
+
+        <section class="rct-win-red overflow-hidden">
+          <div class="rct-titlebar px-3 py-1.5 font-rct text-xs text-center">Recordes Técnicos Gerais</div>
+          <div id="recordesGrid" class="p-3 grid grid-cols-2 md:grid-cols-5 gap-2.5"></div>
+        </section>
+
+        <section class="rct-win-red p-3 flex flex-col md:flex-row gap-2.5">
+          <input id="busca" type="text" oninput="renderTabela()" placeholder="Buscar por nome, parque, país, continente ou fabricante..." class="rct-input flex-1 px-3 py-1.5 text-sm">
+          <select id="ordenacao" onchange="renderTabela()" class="rct-input px-3 py-1.5 text-sm">
+            <option value="original">Ordenar: 1ª andada até a última</option>
+            <option value="ultimas">Ordenar: Última andada até a 1ª</option>
+            <option value="media_desc">Ordenar: Maior Média</option>
+            <option value="media_asc">Ordenar: Menor Média</option>
+            <option value="altura_desc">Ordenar: Maior Altura</option>
+            <option value="velocidade_desc">Ordenar: Maior Velocidade</option>
+            <option value="comprimento_desc">Ordenar: Maior Comprimento</option>
+            <option value="inversoes_desc">Ordenar: Mais Inversões</option>
+          </select>
+        </section>
+
+        <section class="hidden md:block rct-win-red p-2">
+          <div class="rct-inset-red overflow-x-auto max-h-[68vh]">
+            <table class="w-full text-left text-xs whitespace-nowrap">
+              <thead id="theadCatalogo" class="bg-[#36423f] text-white sticky top-0 z-10"></thead>
+              <tbody id="tbody" class="divide-y divide-[#632c2a]"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="cardsMR" class="md:hidden space-y-2.5"></section>
+      </div>
+
+      <div id="viewRankings" class="hidden space-y-4">
+        <div class="rct-win-red overflow-hidden">
+          <div class="rct-titlebar px-3.5 py-2 flex flex-col md:flex-row md:items-center justify-between gap-2">
+            <div>
+              <h2 id="tituloRanking" class="font-rct text-xs md:text-sm">Top 50 Melhores Montanhas-Russas</h2>
+              <p id="subtituloRanking" class="text-[11px] text-[#d1d5db]">Todas as categorias • Desempate: Emoção → Conforto → Percurso → Intensidade</p>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <button id="btnTopMelhores" onclick="mudarModoRanking('melhores')" class="font-rct rct-btn-green px-3 py-1.5 text-[11px]">Top 50 Melhores</button>
+              <button id="btnTopPiores" onclick="mudarModoRanking('piores')" class="font-rct rct-btn px-3 py-1.5 text-[11px]">Top 50 Piores</button>
+              <button id="btnTopBrasil" onclick="mudarModoRanking('brasil')" class="font-rct rct-btn px-3 py-1.5 text-[11px]">🇧🇷 Top 10 Brasil</button>
+            </div>
+          </div>
+          <div class="p-2">
+            <div class="rct-inset-red overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-[#36423f] text-white text-xs">
+                  <tr>
+                    <th class="px-3 py-2.5 w-14">Pos.</th>
+                    <th class="px-3 py-2.5 w-14 text-center">País</th>
+                    <th class="px-3 py-2.5">Montanha-Russa / Parque</th>
+                    <th class="px-3 py-2.5">Continente</th>
+                    <th class="px-3 py-2.5">Desempate</th>
+                    <th class="px-3 py-2.5 text-center">Média</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyRanking" class="divide-y divide-[#632c2a]"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="viewEstatisticas" class="hidden space-y-4">
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="rct-win-green p-3.5"><span class="font-rct text-[10px] uppercase text-[#e2f0d5] rct-shadow-txt">Total de Voltas</span><p id="kpiTotalVoltas" class="font-rct text-2xl md:text-3xl font-bold text-[#fde047] rct-shadow-txt mt-1">0</p></div>
+          <div class="rct-win-green p-3.5"><span class="font-rct text-[10px] uppercase text-[#e2f0d5] rct-shadow-txt">Distância Percorrida</span><p id="kpiDistanciaTotal" class="font-rct text-2xl md:text-3xl font-bold text-[#86efac] rct-shadow-txt mt-1">0 km</p></div>
+          <div class="rct-win-green p-3.5"><span class="font-rct text-[10px] uppercase text-[#e2f0d5] rct-shadow-txt">Ano Recorde de Voltas</span><p id="kpiAnoRecorde" class="font-rct text-2xl md:text-3xl font-bold text-white rct-shadow-txt mt-1">-</p></div>
+        </section>
+
+        <section class="rct-win-green overflow-hidden">
+          <div class="rct-titlebar px-3.5 py-2 flex flex-wrap items-center justify-between gap-2">
+            <h2 class="font-rct text-xs md:text-sm">Mapa-Múndi de Montanhas-Russas</h2>
+            <span id="badgePaisesMapa" class="font-rct text-[11px] px-2 py-0.5 bg-[#44592c] text-[#86efac] border border-[#9cb87b]"></span>
+          </div>
+          <div class="p-3"><div id="geoChartContainer" class="rct-inset-green w-full h-[380px] md:h-[440px]"></div></div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div class="rct-win-green overflow-hidden flex flex-col">
+            <div class="rct-titlebar px-3 py-1.5 font-rct text-xs text-center">Parques por Categoria</div>
+            <div class="p-3 flex-1 flex flex-col"><p id="resumoParquesCat" class="text-xs text-[#e2f0d5] rct-shadow-txt mb-2"></p><div class="bg-[#e9ecf0] p-2 flex-1 min-h-[250px] border-2 border-[#44592c]"><canvas id="chartParquesCat"></canvas></div></div>
+          </div>
+          <div class="rct-win-red overflow-hidden flex flex-col">
+            <div class="rct-titlebar px-3 py-1.5 font-rct text-xs text-center">Coasters por Categoria</div>
+            <div class="p-3 flex-1 flex flex-col"><p id="resumoMRCat" class="text-xs text-[#fde8e8] rct-shadow-txt mb-2"></p><div class="bg-[#e9ecf0] p-2 flex-1 min-h-[250px] border-2 border-[#632c2a] flex items-center justify-center"><canvas id="chartMRCat"></canvas></div></div>
+          </div>
+          <div class="rct-win-blue overflow-hidden flex flex-col">
+            <div class="rct-titlebar px-3 py-1.5 font-rct text-xs text-center">Aço vs. Madeira</div>
+            <div class="p-3 flex-1 flex flex-col"><p id="resumoAcoMadeira" class="text-xs text-[#e2e8f0] rct-shadow-txt mb-2"></p><div class="bg-[#e9ecf0] p-2 flex-1 min-h-[250px] border-2 border-[#4a535e] flex items-center justify-center"><canvas id="chartTipo"></canvas></div></div>
+          </div>
+        </section>
+
+        <section class="rct-win-red overflow-hidden">
+          <div class="rct-titlebar px-3.5 py-2 font-rct text-xs md:text-sm text-center">Top 10 Recordes Técnicos: Aço vs. Madeira</div>
+          <div id="gridAcoMadeiraRecordes" class="p-3 grid grid-cols-1 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <section class="rct-win-green overflow-hidden">
+          <div class="rct-titlebar px-3.5 py-2 font-rct text-xs md:text-sm text-center">Evolução de Voltas por Ano (2010–2026)</div>
+          <div class="p-3"><div class="bg-[#e9ecf0] p-3 border-2 border-[#44592c] relative h-[300px]"><canvas id="chartVoltasAno"></canvas></div></div>
+        </section>
+
+        <section class="rct-win-red overflow-hidden">
+          <div class="rct-titlebar px-3.5 py-2 font-rct text-xs md:text-sm text-center">Top 20 Montanhas-Russas Mais Andadas</div>
+          <div class="p-2">
+            <div class="rct-inset-red overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-[#36423f] text-white text-xs"><tr><th class="px-3 py-2.5 w-14">Pos.</th><th class="px-3 py-2.5">Montanha-Russa / Parque</th><th class="px-3 py-2.5">Fabricante</th><th class="px-3 py-2.5 text-center">Voltas</th><th class="px-3 py-2.5 text-right">Distância</th><th class="px-3 py-2.5 text-center">Média</th></tr></thead>
+                <tbody id="tbodyMaisAndadas" class="divide-y divide-[#632c2a]"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div class="rct-win-blue overflow-hidden"><div class="rct-titlebar px-3 py-1.5 font-rct text-xs text-center">Top 15 Parques</div><div class="p-3"><div class="bg-[#e9ecf0] p-2 border-2 border-[#4a535e] relative h-[420px]"><canvas id="chartParques"></canvas></div></div></div>
+          <div class="rct-win-red overflow-hidden"><div class="rct-titlebar px-3 py-1.5 font-rct text-xs text-center">Top 15 Fabricantes</div><div class="p-3"><div class="bg-[#e9ecf0] p-2 border-2 border-[#632c2a] relative h-[420px]"><canvas id="chartFabricantes"></canvas></div></div></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- MÓDULO 2: PARQUES -->
+    <div id="moduloParques" class="hidden">
+      <div id="viewParquesCatalogo" class="hidden space-y-4">
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="rct-win-green p-3"><span class="font-rct text-[10px] uppercase text-[#e2f0d5] rct-shadow-txt">Parques Visitados</span><p id="kpiParquesTotal" class="font-rct text-2xl md:text-3xl font-bold text-[#86efac] rct-shadow-txt mt-1">0</p></div>
+          <div class="rct-win-green p-3"><span class="font-rct text-[10px] uppercase text-[#e2f0d5] rct-shadow-txt">Países</span><p id="kpiParquesPaises" class="font-rct text-2xl md:text-3xl font-bold text-[#fde047] rct-shadow-txt mt-1">0</p></div>
+          <div class="rct-win-green p-3"><span class="font-rct text-[10px] uppercase text-[#e2f0d5] rct-shadow-txt">Redes / Grupos</span><p id="kpiParquesRedes" class="font-rct text-2xl md:text-3xl font-bold text-white rct-shadow-txt mt-1">0</p></div>
+          <div class="rct-win-green p-3"><span class="font-rct text-[10px] uppercase text-[#e2f0d5] rct-shadow-txt">Avaliados</span><p id="kpiParquesAvaliados" class="font-rct text-2xl md:text-3xl font-bold text-[#bae6fd] rct-shadow-txt mt-1">0</p></div>
+        </section>
+
+        <section class="rct-win-blue p-3 flex flex-col md:flex-row gap-2.5">
+          <input id="buscaParques" type="text" oninput="renderTabelaParques()" placeholder="Buscar parque por nome, cidade, país, continente, tipo ou rede..." class="rct-input flex-1 px-3 py-1.5 text-sm">
+          <select id="ordemParques" onchange="renderTabelaParques()" class="rct-input px-3 py-1.5 text-sm">
+            <option value="alfabetica">Ordenar: A → Z</option>
+            <option value="nota_desc">Ordenar: Maior Média</option>
+            <option value="nota_asc">Ordenar: Menor Média</option>
+          </select>
+        </section>
+
+        <section class="hidden md:block rct-win-blue p-2">
+          <div class="rct-inset-blue overflow-x-auto max-h-[68vh]">
+            <table class="w-full text-left text-xs whitespace-nowrap">
+              <thead id="theadParques" class="bg-[#36423f] text-white sticky top-0 z-10"></thead>
+              <tbody id="tbodyParques" class="divide-y divide-[#4a535e]"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="cardsParques" class="md:hidden space-y-2.5"></section>
+      </div>
+
+      <div id="viewParquesRankings" class="hidden space-y-4">
+        <div class="rct-win-blue overflow-hidden">
+          <div class="rct-titlebar px-3.5 py-2 flex flex-col md:flex-row md:items-center justify-between gap-2">
+            <div>
+              <h2 id="tituloRankingParques" class="font-rct text-xs md:text-sm">Top 50 Melhores Parques</h2>
+              <p class="text-[11px] text-[#d1d5db]">Classificado pela coluna <strong>MÉDIA</strong> (4 Chaves + Custo benefício)</p>
+            </div>
+            <div class="flex gap-1.5">
+              <button id="btnParquesMelhores" onclick="mudarModoRankingParques('melhores')" class="font-rct rct-btn-green px-3 py-1.5 text-[11px]">Top 50 Melhores</button>
+              <button id="btnParquesPiores" onclick="mudarModoRankingParques('piores')" class="font-rct rct-btn px-3 py-1.5 text-[11px]">Top 50 Piores</button>
+            </div>
+          </div>
+          <div class="p-2">
+            <div class="rct-inset-blue overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-[#36423f] text-white text-xs">
+                  <tr>
+                    <th class="px-3 py-2.5 w-14">Pos.</th>
+                    <th class="px-3 py-2.5 w-14 text-center">País</th>
+                    <th class="px-3 py-2.5">Parque / Cidade</th>
+                    <th class="px-3 py-2.5">Continente</th>
+                    <th class="px-3 py-2.5">Tipo / Rede</th>
+                    <th class="px-3 py-2.5 text-center">Média</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyRankingParques" class="divide-y divide-[#4a535e]"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="viewParquesEstatisticas" class="hidden space-y-4">
+        <section class="rct-win-blue overflow-hidden">
+          <div class="rct-titlebar px-3.5 py-2 flex flex-wrap items-center justify-between gap-2">
+            <h2 class="font-rct text-xs md:text-sm">Mapa Interativo de Parques Visitados</h2>
+            <span id="badgeParquesMapa" class="font-rct text-[11px] px-2 py-0.5 bg-[#44592c] text-[#86efac] border border-[#9cb87b]"></span>
+          </div>
+          <div class="p-3"><div id="leafletParquesMap" class="rct-inset-blue w-full h-[460px] z-0"></div></div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div class="rct-win-green overflow-hidden flex flex-col"><div class="rct-titlebar px-3 py-1.5 font-rct text-xs text-center">Status dos Parques</div><div class="p-3 flex-1 flex flex-col"><p id="resumoParquesStatus" class="text-xs text-[#e2f0d5] rct-shadow-txt mb-2"></p><div class="bg-[#e9ecf0] p-2 flex-1 min-h-[250px] border-2 border-[#44592c] flex items-center justify-center"><canvas id="chartParquesStatus"></canvas></div></div></div>
+          <div class="rct-win-blue overflow-hidden flex flex-col"><div class="rct-titlebar px-3 py-1.5 font-rct text-xs text-center">Parques por Tipo</div><div class="p-3 flex-1 flex flex-col"><div class="bg-[#e9ecf0] p-2 flex-1 min-h-[250px] border-2 border-[#4a535e]"><canvas id="chartParquesTipo"></canvas></div></div></div>
+          <div class="rct-win-red overflow-hidden flex flex-col"><div class="rct-titlebar px-3 py-1.5 font-rct text-xs text-center">Top Redes / Grupos</div><div class="p-3 flex-1 flex flex-col"><div class="bg-[#e9ecf0] p-2 flex-1 min-h-[250px] border-2 border-[#632c2a]"><canvas id="chartParquesRedes"></canvas></div></div></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal Detalhes -->
+  <div id="modalDetalhes" class="hidden fixed inset-0 bg-black/65 z-30 flex items-center justify-center p-3">
+    <div id="detalhesConteudo" class="w-full max-w-2xl max-h-[90vh] overflow-y-auto"></div>
+  </div>
+
+  <!-- Modal Cadastro MR -->
+  <div id="modalCadastroMR" class="hidden fixed inset-0 bg-black/65 z-30 flex items-center justify-center p-3">
+    <div class="rct-win-red w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+      <div class="rct-titlebar px-3.5 py-2 flex justify-between items-center sticky top-0">
+        <span class="w-5"></span>
+        <h2 class="font-rct text-xs md:text-sm">Registrar Nova Montanha-Russa</h2>
+        <button onclick="fecharModal('modalCadastroMR')" class="rct-close">X</button>
+      </div>
+      <form id="formMontanha" onsubmit="salvarMontanha(event)" class="p-4 space-y-4"></form>
+    </div>
+  </div>
+
+  <!-- Modal Cadastro Parque -->
+  <div id="modalCadastroParque" class="hidden fixed inset-0 bg-black/65 z-30 flex items-center justify-center p-3">
+    <div class="rct-win-blue w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+      <div class="rct-titlebar px-3.5 py-2 flex justify-between items-center sticky top-0">
+        <span class="w-5"></span>
+        <h2 class="font-rct text-xs md:text-sm">Registrar Novo Parque</h2>
+        <button onclick="fecharModal('modalCadastroParque')" class="rct-close">X</button>
+      </div>
+      <form id="formParque" onsubmit="salvarParque(event)" class="p-4 space-y-4"></form>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxnpRqQO8bE2tTXxdaMi0tVroAOguGp49pvNPJ6DkkOF-ZphdoO5cM2pInqsfYoNFPu/exec';
+
+    let STATE = { cabecalhos: [], montanhas: [], parquesCabecalhos: [], parques: [], listas: {}, totalParquesDados: 0, parquesPorCategoria: {} };
+    let ABA_MAE = 'mr', SUB_ABA_MR = 'catalogo', SUB_ABA_PARQUES = 'catalogo';
+    let MODO_RANKING = 'melhores', MODO_RANKING_PARQUES = 'melhores';
+    let CHARTS = {}, GEO_READY = false, LEAFLET_MAP = null;
+
+    const COLS_SPECS = ['COMPRIMENTO', 'ALTURA', 'QUEDA', 'VELOCIDADE', 'INVERSÕES', 'ABERTA', 'FECHADA', 'IDADE'];
+    const COLS_NOTAS = ['EMOÇÃO', 'INTENSIDADE', 'PERCURSO', 'CONFORTO', 'MÉDIA'];
+    const COLS_CATALOGO = ['PARQUE', 'ESTADO', 'PAÍS', 'CONTINENTE', 'TIPO', 'FABRICANTE', 'MODELO', 'TREM', 'CATEGORIA', 'COMPRIMENTO', 'ALTURA', 'QUEDA', 'VELOCIDADE', 'INVERSÕES', 'ABERTA', 'FECHADA', 'IDADE', 'EMOÇÃO', 'INTENSIDADE', 'PERCURSO', 'CONFORTO', 'MÉDIA'];
+
+    const MAPA_PAISES_ISO = {
+      'ESTADOS UNIDOS': 'US', 'BRASIL': 'BR', 'ALEMANHA': 'DE', 'PAÍSES BAIXOS': 'NL', 'HOLANDA': 'NL',
+      'REINO UNIDO': 'GB', 'INGLATERRA': 'GB', 'ESPANHA': 'ES', 'FRANÇA': 'FR', 'BÉLGICA': 'BE',
+      'POLÔNIA': 'PL', 'ÁUSTRIA': 'AT', 'DINAMARCA': 'DK', 'FINLÂNDIA': 'FI', 'NORUEGA': 'NO',
+      'SUÉCIA': 'SE', 'CANADÁ': 'CA', 'MÉXICO': 'MX', 'ARGENTINA': 'AR', 'CHILE': 'CL',
+      'COLÔMBIA': 'CO', 'COSTA RICA': 'CR', 'PERU': 'PE', 'PORTUGAL': 'PT', 'URUGUAI': 'UY',
+      'ITÁLIA': 'IT', 'GRÉCIA': 'GR', 'SUÍÇA': 'CH', 'JAPÃO': 'JP', 'COREIA DO SUL': 'KR',
+      'CHINA': 'CN', 'EMIRADOS ÁRABES UNIDOS': 'AE', 'ARÁBIA SAUDITA': 'SA', 'CATAR': 'QA',
+      'AUSTRÁLIA': 'AU', 'NOVA ZELÂNDIA': 'NZ', 'ÁFRICA DO SUL': 'ZA', 'ESTÔNIA': 'EE',
+      'IRLANDA': 'IE', 'RÚSSIA': 'RU', 'SINGAPURA': 'SG', 'TAILÂNDIA': 'TH', 'TAIWAN': 'TW',
+      'TURQUIA': 'TR', 'VIETNÃ': 'VN', 'HONG KONG': 'HK', 'ÍNDIA': 'IN', 'ISRAEL': 'IL',
+      'MALÁSIA': 'MY', 'MARROCOS': 'MA', 'EGITO': 'EG', 'CROÁCIA': 'HR', 'FILIPINAS': 'PH',
+      'EQUADOR': 'EC', 'GUATEMALA': 'GT', 'PANAMÁ': 'PA', 'BAHREIN': 'BH', 'BOTSUANA': 'BW'
+    };
+
+    function getBandeira(pais) {
+      if (!pais) return '🏳️';
+      const iso = MAPA_PAISES_ISO[String(pais).trim().toUpperCase()];
+      return iso ? String.fromCodePoint(...iso.split('').map(c => 127397 + c.charCodeAt(0))) : '🌍';
+    }
+
+    function getBadgeContinente(continente) {
+      if (!continente) return '<span class="text-xs opacity-60">-</span>';
+      return `<span class="px-2 py-0.5 text-[11px] font-bold bg-[#36423f] text-white border border-[#1d2422] whitespace-nowrap">${continente}</span>`;
+    }
+
+    function getBadgeNotaRCT(n) {
+      if (isNaN(n)) return 'bg-[#36423f] text-[#d1d5db] border-[#1d2422]';
+      if (n >= 4.5) return 'bg-[#22c55e] text-[#052e16] border-[#14532d]';
+      if (n >= 3.5) return 'bg-[#84cc16] text-[#1a2e05] border-[#365314]';
+      if (n >= 2.5) return 'bg-[#facc15] text-[#422006] border-[#854d0e]';
+      return 'bg-[#ef4444] text-white border-[#7f1d1d]';
+    }
+
+    function getCorBarraStat(n) {
+      if (isNaN(n)) return '#9ca3af';
+      if (n >= 4.0) return '#22c55e';
+      if (n >= 2.5) return '#facc15';
+      return '#ef4444';
+    }
+
+    google.charts.load('current', { packages: ['geochart'] });
+    google.charts.setOnLoadCallback(() => {
+      GEO_READY = true;
+      if (ABA_MAE === 'mr' && SUB_ABA_MR === 'estatisticas') renderMapaMundi();
+    });
+
+    async function carregarDadosAPI() {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        iniciarApp(data);
+      } catch (err) {
+        document.getElementById('loading').innerHTML = `<div class="p-4 text-[#fca5a5] font-bold">Erro ao carregar: ${err.message}</div>`;
+      }
+    }
+
+    window.onload = () => carregarDadosAPI();
+
+    function iniciarApp(data) {
+      STATE = data;
+      document.getElementById('loading').classList.add('hidden');
+      atualizarKPIs(); renderRecordes(); montarCabecalhoCatalogo(); renderTabela(); mudarModoRanking('melhores'); montarFormularioMR();
+      atualizarKPIsParques(); montarCabecalhoParques(); renderTabelaParques(); mudarModoRankingParques('melhores'); montarFormularioParque();
+      trocarAbaMae(ABA_MAE);
+    }
+
+    // ================= NAVEGAÇÃO =================
+    function trocarAbaMae(aba) {
+      ABA_MAE = aba;
+      const isMR = aba === 'mr';
+      document.getElementById('moduloMR').classList.toggle('hidden', !isMR);
+      document.getElementById('moduloParques').classList.toggle('hidden', isMR);
+      document.getElementById('subNavMR').classList.toggle('hidden', !isMR);
+      document.getElementById('subNavParques').classList.toggle('hidden', isMR);
+
+      document.getElementById('mainBtnMR').className = isMR ? 'font-rct rct-btn-red px-3 py-1.5 text-xs flex items-center gap-1.5' : 'font-rct rct-btn px-3 py-1.5 text-xs flex items-center gap-1.5';
+      document.getElementById('mainBtnParques').className = !isMR ? 'font-rct rct-btn px-3 py-1.5 text-xs flex items-center gap-1.5 ring-2 ring-white' : 'font-rct rct-btn px-3 py-1.5 text-xs flex items-center gap-1.5 opacity-80';
+
+      document.getElementById('txtBtnTopo').textContent = isMR ? 'Nova Montanha-Russa' : 'Novo Parque';
+      document.getElementById('btnAcaoTopo').className = isMR ? 'font-rct rct-btn-red text-xs px-3 py-1.5 flex items-center gap-1.5' : 'font-rct rct-btn text-xs px-3 py-1.5 flex items-center gap-1.5';
+
+      if (isMR) trocarSubAbaMR(SUB_ABA_MR); else trocarSubAbaParques(SUB_ABA_PARQUES);
+    }
+
+    function trocarSubAbaMR(aba) {
+      SUB_ABA_MR = aba;
+      ['catalogo', 'rankings', 'estatisticas'].forEach(a => {
+        const cap = a.charAt(0).toUpperCase() + a.slice(1);
+        document.getElementById('view' + cap).classList.toggle('hidden', a !== aba);
+        document.getElementById('tabBtn' + cap).className = (a === aba) ? 'rct-tab-active-red px-3 py-1.5 whitespace-nowrap flex items-center gap-1.5' : 'rct-tab px-3 py-1.5 whitespace-nowrap flex items-center gap-1.5';
+      });
+      if (aba === 'estatisticas') renderEstatisticas();
+    }
+
+    function trocarSubAbaParques(aba) {
+      SUB_ABA_PARQUES = aba;
+      ['catalogo', 'rankings', 'estatisticas'].forEach(a => {
+        const cap = a.charAt(0).toUpperCase() + a.slice(1);
+        document.getElementById('viewParques' + cap).classList.toggle('hidden', a !== aba);
+        document.getElementById('tabBtnParques' + cap).className = (a === aba) ? 'rct-tab-active-blue px-3 py-1.5 whitespace-nowrap flex items-center gap-1.5' : 'rct-tab px-3 py-1.5 whitespace-nowrap flex items-center gap-1.5';
+      });
+      if (aba === 'estatisticas') renderEstatisticasParques();
+    }
+
+    function abrirModalCadastroAtual() { document.getElementById(ABA_MAE === 'mr' ? 'modalCadastroMR' : 'modalCadastroParque').classList.remove('hidden'); }
+
+    // ================= HELPERS =================
+    function getCol(possiveis, listaCols = STATE.cabecalhos) { return listaCols.find(c => possiveis.includes(c.trim().toUpperCase())); }
+    function toNum(v) {
+      if (v === null || v === undefined || v === '') return NaN;
+      if (typeof v === 'number') return v;
+      const n = parseFloat(String(v).replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, ''));
+      return isNaN(n) ? NaN : n;
+    }
+    function formatarMedia(v) { const n = typeof v === 'number' ? v : toNum(v); return isNaN(n) ? '-' : n.toFixed(3).replace('.', ','); }
+    function formatarNota2(v) { const n = typeof v === 'number' ? v : toNum(v); return isNaN(n) ? '-' : n.toFixed(2).replace('.', ','); }
+    function getNomeCoaster(item) { return item[getCol(['NOME', 'MONTANHA-RUSSA', 'COASTER']) || STATE.cabecalhos[1] || STATE.cabecalhos[0]] || 'Sem nome'; }
+    function getPaisItem(item, listaCols = STATE.cabecalhos) { const c = getCol(['PAÍS', 'PAIS', 'COUNTRY'], listaCols); return c ? (item[c] || '') : ''; }
+    function contarPorColuna(lista, col) {
+      const contagem = {}; if (!col) return [];
+      lista.forEach(item => { const val = String(item[col] || '').trim(); if (val) contagem[val] = (contagem[val] || 0) + 1; });
+      return Object.entries(contagem).sort((a, b) => b[1] - a[1]);
+    }
+    function criarChart(chave, id, config) { if (CHARTS[chave]) CHARTS[chave].destroy(); CHARTS[chave] = new Chart(document.getElementById(id), config); }
+
+    // ================= MÓDULO 1: MONTANHAS-RUSSAS =================
+    function atualizarKPIs() {
+      const colPais = getCol(['PAÍS', 'PAIS', 'COUNTRY']), colMedia = getCol(['MÉDIA', 'MEDIA']);
+      const medias = STATE.montanhas.map(c => toNum(c[colMedia])).filter(n => !isNaN(n) && n > 0);
+      document.getElementById('kpiTotal').textContent = STATE.montanhas.length;
+      document.getElementById('kpiParques').textContent = STATE.totalParquesDados || 0;
+      document.getElementById('kpiPaises').textContent = colPais ? new Set(STATE.montanhas.map(c => c[colPais]).filter(Boolean)).size : 0;
+      document.getElementById('kpiMediaGeral').textContent = formatarMedia(medias.length ? medias.reduce((a, b) => a + b, 0) / medias.length : 0);
+    }
+
+    function renderRecordes() {
+      const specs = [
+        { label: 'Mais Alta', col: getCol(['ALTURA']), sufixo: 'm' },
+        { label: 'Mais Rápida', col: getCol(['VELOCIDADE']), sufixo: 'km/h' },
+        { label: 'Mais Longa', col: getCol(['COMPRIMENTO']), sufixo: 'm' },
+        { label: 'Maior Queda', col: getCol(['QUEDA']), sufixo: 'm' },
+        { label: 'Mais Inversões', col: getCol(['INVERSÕES', 'INVERSOES']), sufixo: 'x' }
+      ];
+      document.getElementById('recordesGrid').innerHTML = specs.map(s => {
+        let melhor = null, maxVal = -Infinity;
+        if (s.col) STATE.montanhas.forEach(c => { const v = toNum(c[s.col]); if (!isNaN(v) && v > maxVal) { maxVal = v; melhor = c; } });
+        return `<div class="rct-inset-red p-2.5"><span class="font-rct text-[10px] uppercase text-[#fde8e8] rct-shadow-txt">${s.label}</span><p class="font-rct text-lg font-bold text-[#fde047] rct-shadow-txt mt-1">${melhor ? maxVal + ' ' + s.sufixo : '-'}</p><p class="text-xs text-white font-semibold truncate mt-0.5">${melhor ? `${getBandeira(getPaisItem(melhor))} ${getNomeCoaster(melhor)}` : 'Sem dado'}</p></div>`;
+      }).join('');
+    }
+
+    function montarCabecalhoCatalogo() {
+      document.getElementById('theadCatalogo').innerHTML = `<tr><th class="px-3 py-2.5 sticky left-0 bg-[#36423f] z-20">Nº</th><th class="px-3 py-2.5 sticky left-10 bg-[#36423f] z-20">Montanha-Russa</th>${COLS_CATALOGO.map(c => `<th class="px-3 py-2.5">${c}</th>`).join('')}</tr>`;
+    }
+
+    function renderTabela() {
+      const termo = (document.getElementById('busca').value || '').toLowerCase(), ordem = document.getElementById('ordenacao').value;
+      const colNum = getCol(['Nº', 'N°', '#']), colMedia = getCol(['MÉDIA', 'MEDIA']), colParque = getCol(['PARQUE', 'PARK']);
+      const colFab = getCol(['FABRICANTE', 'DESIGNER']), colTipo = getCol(['TIPO']), colCat = getCol(['CATEGORIA']);
+      let lista = STATE.montanhas.filter(item => Object.values(item).some(v => String(v).toLowerCase().includes(termo)));
+
+      if (ordem === 'original') lista.sort((a, b) => (toNum(a[colNum]) || a._linha) - (toNum(b[colNum]) || b._linha));
+      else if (ordem === 'ultimas') lista.sort((a, b) => (toNum(b[colNum]) || b._linha) - (toNum(a[colNum]) || a._linha));
+      else if (ordem === 'media_asc') lista.sort((a, b) => (toNum(a[colMedia]) || 999) - (toNum(b[colMedia]) || 999));
+      else {
+        const mapaDesc = { media_desc: colMedia, altura_desc: getCol(['ALTURA']), velocidade_desc: getCol(['VELOCIDADE']), comprimento_desc: getCol(['COMPRIMENTO']), inversoes_desc: getCol(['INVERSÕES', 'INVERSOES']) };
+        if (mapaDesc[ordem]) lista.sort((a, b) => (toNum(b[mapaDesc[ordem]]) || -1) - (toNum(a[mapaDesc[ordem]]) || -1));
+      }
+
+      const mapaCols = COLS_CATALOGO.map(nome => ({ nome, colReal: getCol([nome]) }));
+
+      document.getElementById('tbody').innerHTML = lista.map((item, idx) => {
+        const celulas = mapaCols.map(({ nome, colReal }) => {
+          const val = colReal ? item[colReal] : '';
+          if (nome === 'MÉDIA') {
+            const m = toNum(val);
+            return `<td class="px-3 py-2 text-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold border ${getBadgeNotaRCT(m)}">${formatarMedia(m)}</span></td>`;
+          }
+          if (['EMOÇÃO', 'INTENSIDADE', 'PERCURSO', 'CONFORTO'].includes(nome)) return `<td class="px-3 py-2 text-center text-[#fde8e8]">${formatarNota2(val)}</td>`;
+          return `<td class="px-3 py-2 text-white">${val !== '' && val !== undefined ? val : '-'}</td>`;
+        }).join('');
+        return `<tr onclick="abrirDetalhesMR(${item._linha})" class="hover:bg-[#a85856] cursor-pointer"><td class="px-3 py-2 text-[#fde8e8] font-mono sticky left-0 bg-[#823e3c]">${colNum && item[colNum] ? item[colNum] : idx + 1}</td><td class="px-3 py-2 font-bold text-white rct-shadow-txt sticky left-10 bg-[#823e3c]">${getBandeira(getPaisItem(item))} ${getNomeCoaster(item)}</td>${celulas}</tr>`;
+      }).join('');
+
+      document.getElementById('cardsMR').innerHTML = lista.map((item, idx) => {
+        const m = colMedia ? toNum(item[colMedia]) : NaN;
+        const num = colNum && item[colNum] ? item[colNum] : idx + 1;
+        const pais = getPaisItem(item);
+        const tags = [colFab && item[colFab], colTipo && item[colTipo], colCat && item[colCat]].filter(Boolean);
+        return `
+          <div onclick="abrirDetalhesMR(${item._linha})" class="rct-win-red p-3 space-y-2 cursor-pointer active:translate-y-[1px]">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <div class="text-sm font-bold text-white rct-shadow-txt leading-snug"><span class="text-[#fde047] font-mono mr-1">#${num}</span>${getBandeira(pais)} ${getNomeCoaster(item)}</div>
+                <div class="text-xs text-[#fde8e8] mt-0.5 truncate">${colParque && item[colParque] ? item[colParque] : '-'}${pais ? ' • ' + pais : ''}</div>
+              </div>
+              <span class="font-rct px-2 py-1 text-[11px] font-bold border shrink-0 ${getBadgeNotaRCT(m)}">${formatarMedia(m)}</span>
+            </div>
+            ${tags.length ? `<div class="flex flex-wrap gap-1 pt-1">${tags.map(t => `<span class="px-2 py-0.5 bg-[#632c2a] border border-[#bd706e] text-[11px] text-white">${t}</span>`).join('')}</div>` : ''}
+          </div>`;
+      }).join('');
+    }
+
+    function mudarModoRanking(modo) {
+      MODO_RANKING = modo;
+      const configs = {
+        melhores: { titulo: 'Top 50 Melhores Montanhas-Russas', sub: 'Todas as categorias • Desempate: Emoção → Conforto → Percurso → Intensidade', btnAtivo: 'btnTopMelhores' },
+        piores: { titulo: 'Top 50 Piores Montanhas-Russas', sub: 'Exclui categorias <strong>Infantil</strong> e <strong>Familiar</strong> • Desempate: Emoção → Conforto → Percurso → Intensidade', btnAtivo: 'btnTopPiores' },
+        brasil: { titulo: '🇧🇷 Top 10 Melhores Montanhas-Russas do Brasil', sub: 'Todas as categorias no Brasil • Desempate: Emoção → Conforto → Percurso → Intensidade', btnAtivo: 'btnTopBrasil' }
+      };
+      const cfg = configs[modo];
+      document.getElementById('tituloRanking').textContent = cfg.titulo;
+      document.getElementById('subtituloRanking').innerHTML = cfg.sub;
+      ['btnTopMelhores', 'btnTopPiores', 'btnTopBrasil'].forEach(id => {
+        document.getElementById(id).className = (id === cfg.btnAtivo) ? 'font-rct rct-btn-green px-3 py-1.5 text-[11px]' : 'font-rct rct-btn px-3 py-1.5 text-[11px]';
+      });
+      renderRankings();
+    }
+
+    function calcularMotivoDesempate(lista, idx, criteriosInfo) {
+      const atual = lista[idx], mAtual = formatarMedia(atual[criteriosInfo[0].col]);
+      const ant = idx > 0 ? lista[idx - 1] : null, prox = idx < lista.length - 1 ? lista[idx + 1] : null;
+      const empatouAnt = ant && formatarMedia(ant[criteriosInfo[0].col]) === mAtual;
+      const empatouProx = prox && formatarMedia(prox[criteriosInfo[0].col]) === mAtual;
+      if (!empatouAnt && !empatouProx) return '<span class="text-[#fde8e8] text-xs">Média</span>';
+      const vizinho = empatouAnt ? ant : prox;
+      for (let i = 1; i < criteriosInfo.length; i++) {
+        const { nome, col } = criteriosInfo[i]; if (!col) continue;
+        const vA = toNum(atual[col]) || 0, vV = toNum(vizinho[col]) || 0;
+        if (vA !== vV) return `<span class="text-xs px-2 py-0.5 bg-[#36423f] text-[#fde047] font-bold border border-[#1d2422]">${nome}: ${formatarNota2(vA)}</span>`;
+      }
+      return '<span class="text-xs text-[#fde047] font-bold">Empate total</span>';
+    }
+
+    function renderRankings() {
+      const colCat = getCol(['CATEGORIA']), colCont = getCol(['CONTINENTE']), colMedia = getCol(['MÉDIA', 'MEDIA']), colEmo = getCol(['EMOÇÃO', 'EMOCAO']), colConf = getCol(['CONFORTO']), colPerc = getCol(['PERCURSO']), colInt = getCol(['INTENSIDADE']), colParque = getCol(['PARQUE', 'PARK']);
+      let elegiveis = STATE.montanhas.filter(item => {
+        if (MODO_RANKING === 'piores' && ['INFANTIL', 'FAMILIAR'].includes((colCat && item[colCat] ? item[colCat] : '').trim().toUpperCase())) return false;
+        if (MODO_RANKING === 'brasil' && getPaisItem(item).trim().toUpperCase() !== 'BRASIL') return false;
+        const m = toNum(item[colMedia]); return !isNaN(m) && m > 0;
+      });
+      const criteriosInfo = [{ nome: 'Média', col: colMedia }, { nome: 'Emoção', col: colEmo }, { nome: 'Conforto', col: colConf }, { nome: 'Percurso', col: colPerc }, { nome: 'Intensidade', col: colInt }];
+      elegiveis.sort((a, b) => {
+        for (const { col } of criteriosInfo) { if (!col) continue; const vA = toNum(a[col]) || 0, vB = toNum(b[col]) || 0; if (vA !== vB) return MODO_RANKING === 'piores' ? (vA - vB) : (vB - vA); }
+        return 0;
+      });
+      const topLista = elegiveis.slice(0, MODO_RANKING === 'brasil' ? 10 : 50);
+      document.getElementById('tbodyRanking').innerHTML = topLista.map((item, idx) => `
+        <tr onclick="abrirDetalhesMR(${item._linha})" class="hover:bg-[#a85856] cursor-pointer">
+          <td class="px-3 py-2.5 font-rct text-xs font-bold ${idx < 3 ? 'text-[#fde047]' : 'text-[#fde8e8]'} rct-shadow-txt">#${idx + 1}</td>
+          <td class="px-3 py-2.5 text-center text-xl">${getBandeira(getPaisItem(item))}</td>
+          <td class="px-3 py-2.5"><div class="font-bold text-white rct-shadow-txt">${getNomeCoaster(item)}</div><div class="text-xs text-[#fde8e8]">${item[colParque] || ''}</div></td>
+          <td class="px-3 py-2.5">${getBadgeContinente(colCont ? item[colCont] : '')}</td>
+          <td class="px-3 py-2.5">${calcularMotivoDesempate(topLista, idx, criteriosInfo)}</td>
+          <td class="px-3 py-2.5 text-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold border ${getBadgeNotaRCT(toNum(item[colMedia]))}">${formatarMedia(item[colMedia])}</span></td>
+        </tr>`).join('');
+    }
+
+    function renderEstatisticas() {
+      renderVoltasEMaisAndadas(); renderParquesPorCategoria(); renderMRPorCategoria(); renderGraficoTipo(); renderRecordesAcoMadeira(); renderGraficoParques(); renderGraficoFabricantes();
+      if (GEO_READY) renderMapaMundi();
+    }
+
+    const CHART_TICKS = { color: '#1f2937', font: { size: 11 } };
+    const CHART_GRID = { color: '#cbd5e1' };
+
+    function renderParquesPorCategoria() {
+      const dados = ['Aquático', 'Diversões', 'FEC', 'Indoor', 'Itinerante', 'Temático'].map(c => [c, STATE.parquesPorCategoria[c] || 0]).sort((a, b) => b[1] - a[1]);
+      document.getElementById('resumoParquesCat').textContent = `Total: ${STATE.totalParquesDados} parques`;
+      criarChart('parquesCat', 'chartParquesCat', { type: 'bar', data: { labels: dados.map(d => d[0]), datasets: [{ data: dados.map(d => d[1]), backgroundColor: '#6f8c4f', borderColor: '#44592c', borderWidth: 1 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: CHART_GRID, ticks: CHART_TICKS }, y: { grid: { display: false }, ticks: CHART_TICKS } } } });
+    }
+
+    function renderMRPorCategoria() {
+      const colCat = getCol(['CATEGORIA']), contagem = { 'Radical': 0, 'Familiar': 0, 'Infantil': 0 };
+      if (colCat) STATE.montanhas.forEach(m => { const v = String(m[colCat] || '').trim().toLowerCase(); if (v === 'radical') contagem['Radical']++; else if (v === 'familiar') contagem['Familiar']++; else if (v === 'infantil') contagem['Infantil']++; });
+      const dados = Object.entries(contagem), total = dados.reduce((s, d) => s + d[1], 0) || 1;
+      document.getElementById('resumoMRCat').textContent = dados.map(d => `${d[0]}: ${d[1]} (${((d[1] / total) * 100).toFixed(1)}%)`).join(' • ');
+      criarChart('mrCat', 'chartMRCat', { type: 'doughnut', data: { labels: dados.map(d => d[0]), datasets: [{ data: dados.map(d => d[1]), backgroundColor: ['#9b4e4c', '#798594', '#6f8c4f'], borderColor: '#e9ecf0', borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#1f2937', padding: 12 } } } } });
+    }
+
+    function renderRecordesAcoMadeira() {
+      const colTipo = getCol(['TIPO']), colParque = getCol(['PARQUE', 'PARK']);
+      const specs = [{ titulo: 'Mais Altas', col: getCol(['ALTURA']), sufixo: 'm' }, { titulo: 'Mais Rápidas', col: getCol(['VELOCIDADE']), sufixo: 'km/h' }, { titulo: 'Mais Longas', col: getCol(['COMPRIMENTO']), sufixo: 'm' }];
+      const filtrarTop10 = (tipoAlvo, colSpec) => (!colTipo || !colSpec) ? [] : STATE.montanhas.filter(m => String(m[colTipo] || '').trim().toLowerCase() === tipoAlvo && !isNaN(toNum(m[colSpec])) && toNum(m[colSpec]) > 0).sort((a, b) => toNum(b[colSpec]) - toNum(a[colSpec])).slice(0, 10);
+      const renderLista = (lista, colSpec, sufixo) => lista.map((item, i) => `<div onclick="abrirDetalhesMR(${item._linha})" class="flex items-center justify-between py-1.5 border-b border-[#632c2a] last:border-0 hover:bg-[#a85856] px-2 cursor-pointer"><div class="min-w-0 pr-2"><p class="text-xs font-bold text-white truncate"><span class="text-[#fde047] mr-1">#${i + 1}</span>${getBandeira(getPaisItem(item))} ${getNomeCoaster(item)}</p><p class="text-[11px] text-[#fde8e8] truncate">${item[colParque] || ''}</p></div><span class="font-rct text-[11px] font-bold text-[#86efac] rct-shadow-txt whitespace-nowrap">${toNum(item[colSpec]).toLocaleString('pt-BR')} ${sufixo}</span></div>`).join('');
+      document.getElementById('gridAcoMadeiraRecordes').innerHTML = specs.map(s => `<div class="rct-inset-red p-3 space-y-3"><h3 class="font-rct text-xs font-bold text-[#fde047] rct-shadow-txt border-b border-[#bd706e] pb-1.5">${s.titulo}</h3><div><span class="font-rct text-[10px] uppercase text-[#bae6fd]">Aço (Top 10)</span><div class="mt-1">${renderLista(filtrarTop10('aço', s.col), s.col, s.sufixo)}</div></div><div><span class="font-rct text-[10px] uppercase text-[#fde047]">Madeira (Top 10)</span><div class="mt-1">${renderLista(filtrarTop10('madeira', s.col), s.col, s.sufixo)}</div></div></div>`).join('');
+    }
+
+    function renderVoltasEMaisAndadas() {
+      const colVoltas = getCol(['TOTAL DE VOLTAS', 'VOLTAS']), colDist = getCol(['COMPRIMENTO TOTAL DE VOLTAS (M)']), colParque = getCol(['PARQUE', 'PARK']), colFab = getCol(['FABRICANTE', 'DESIGNER']), colMedia = getCol(['MÉDIA', 'MEDIA']);
+      let somaVoltas = 0, somaMetros = 0;
+      STATE.montanhas.forEach(c => { const v = colVoltas ? toNum(c[colVoltas]) : 0, m = colDist ? toNum(c[colDist]) : 0; if (!isNaN(v)) somaVoltas += v; if (!isNaN(m)) somaMetros += m; });
+      document.getElementById('kpiTotalVoltas').textContent = somaVoltas.toLocaleString('pt-BR');
+      document.getElementById('kpiDistanciaTotal').textContent = (somaMetros / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' km';
+
+      const colsAnos = STATE.cabecalhos.filter(c => /^20\d{2}$/.test(c.trim())).sort((a, b) => Number(a) - Number(b));
+      const totaisPorAno = colsAnos.map(ano => STATE.montanhas.reduce((s, c) => s + (toNum(c[ano]) || 0), 0));
+      let maxAno = '-', maxQtd = -1;
+      colsAnos.forEach((ano, i) => { if (totaisPorAno[i] > maxQtd) { maxQtd = totaisPorAno[i]; maxAno = ano; } });
+      document.getElementById('kpiAnoRecorde').textContent = maxQtd > 0 ? `${maxAno} (${maxQtd})` : '-';
+      criarChart('voltasAno', 'chartVoltasAno', { type: 'bar', data: { labels: colsAnos, datasets: [{ data: totaisPorAno, backgroundColor: '#6f8c4f', borderColor: '#44592c', borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: CHART_TICKS }, y: { grid: CHART_GRID, ticks: CHART_TICKS, beginAtZero: true } } } });
+
+      const maisAndadas = STATE.montanhas.filter(c => colVoltas && toNum(c[colVoltas]) > 0).sort((a, b) => (toNum(b[colVoltas]) || 0) - (toNum(a[colVoltas]) || 0)).slice(0, 20);
+      document.getElementById('tbodyMaisAndadas').innerHTML = maisAndadas.map((item, idx) => {
+        const metros = colDist ? toNum(item[colDist]) : NaN;
+        return `<tr onclick="abrirDetalhesMR(${item._linha})" class="hover:bg-[#a85856] cursor-pointer"><td class="px-3 py-2 font-rct text-xs font-bold ${idx < 3 ? 'text-[#fde047]' : 'text-[#fde8e8]'}">#${idx + 1}</td><td class="px-3 py-2"><div class="font-bold text-white rct-shadow-txt">${getBandeira(getPaisItem(item))} ${getNomeCoaster(item)}</div><div class="text-xs text-[#fde8e8]">${item[colParque] || ''}</div></td><td class="px-3 py-2 text-white">${item[colFab] || '-'}</td><td class="px-3 py-2 text-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold bg-[#36423f] text-[#86efac] border border-[#1d2422]">${toNum(item[colVoltas])}x</span></td><td class="px-3 py-2 text-right text-white">${!isNaN(metros) && metros > 0 ? (metros / 1000).toFixed(2).replace('.', ',') + ' km' : '-'}</td><td class="px-3 py-2 text-center font-bold text-[#fde047]">${formatarMedia(item[colMedia])}</td></tr>`;
+      }).join('');
+    }
+
+    function renderGraficoTipo() {
+      const dados = contarPorColuna(STATE.montanhas, getCol(['TIPO'])), total = dados.reduce((s, d) => s + d[1], 0) || 1;
+      document.getElementById('resumoAcoMadeira').textContent = dados.map(d => `${d[0]}: ${d[1]} (${((d[1] / total) * 100).toFixed(1)}%)`).join(' • ');
+      criarChart('tipo', 'chartTipo', { type: 'doughnut', data: { labels: dados.map(d => d[0]), datasets: [{ data: dados.map(d => d[1]), backgroundColor: ['#798594', '#9b4e4c', '#6f8c4f'], borderColor: '#e9ecf0', borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#1f2937', padding: 12 } } } } });
+    }
+
+    function renderGraficoParques() {
+      const colParque = getCol(['PARQUE', 'PARK']), parquePais = {};
+      STATE.montanhas.forEach(m => { const p = String(m[colParque] || '').trim(); if (p && !parquePais[p]) parquePais[p] = getPaisItem(m); });
+      const top15 = contarPorColuna(STATE.montanhas, colParque).slice(0, 15);
+      criarChart('parques', 'chartParques', { type: 'bar', data: { labels: top15.map(d => `${getBandeira(parquePais[d[0]])} ${d[0]}`), datasets: [{ data: top15.map(d => d[1]), backgroundColor: '#798594', borderColor: '#4a535e', borderWidth: 1 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: CHART_GRID, ticks: CHART_TICKS }, y: { grid: { display: false }, ticks: CHART_TICKS } } } });
+    }
+
+    function renderGraficoFabricantes() {
+      const top15 = contarPorColuna(STATE.montanhas, getCol(['FABRICANTE', 'DESIGNER'])).slice(0, 15);
+      criarChart('fabricantes', 'chartFabricantes', { type: 'bar', data: { labels: top15.map(d => d[0]), datasets: [{ data: top15.map(d => d[1]), backgroundColor: '#9b4e4c', borderColor: '#632c2a', borderWidth: 1 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: CHART_GRID, ticks: CHART_TICKS }, y: { grid: { display: false }, ticks: CHART_TICKS } } } });
+    }
+
+    function renderMapaMundi() {
+      const contagemPaises = contarPorColuna(STATE.montanhas, getCol(['PAÍS', 'PAIS', 'COUNTRY']));
+      document.getElementById('badgePaisesMapa').textContent = `${contagemPaises.length} países`;
+      const dataTable = new google.visualization.DataTable();
+      dataTable.addColumn('string', 'País'); dataTable.addColumn('number', 'Montanhas-Russas');
+      contagemPaises.forEach(([nomePais, qtd]) => dataTable.addRow([{ v: MAPA_PAISES_ISO[nomePais.toUpperCase()] || nomePais, f: `${getBandeira(nomePais)} ${nomePais}` }, { v: Math.log10(qtd + 1), f: `${qtd} montanhas-russas` }]));
+      new google.visualization.GeoChart(document.getElementById('geoChartContainer')).draw(dataTable, { backgroundColor: '#5d7840', datalessRegionColor: '#9cb87b', defaultColor: '#44592c', colorAxis: { colors: ['#fef08a', '#facc15', '#f97316', '#dc2626', '#7f1d1d'] }, legend: 'none', tooltip: { textStyle: { color: '#111827', fontSize: 13 } } });
+    }
+
+    // ================= MÓDULO 2: PARQUES =================
+    function getColMediaParque() { return getCol(['MÉDIA', 'MEDIA', 'TOTAL'], STATE.parquesCabecalhos); }
+
+    function atualizarKPIsParques() {
+      const cols = STATE.parquesCabecalhos;
+      const colPais = getCol(['PAÍS', 'PAIS'], cols), colRede = getCol(['REDE'], cols), colMedia = getColMediaParque();
+      document.getElementById('kpiParquesTotal').textContent = STATE.parques.length;
+      document.getElementById('kpiParquesPaises').textContent = colPais ? new Set(STATE.parques.map(p => p[colPais]).filter(Boolean)).size : 0;
+      document.getElementById('kpiParquesRedes').textContent = colRede ? new Set(STATE.parques.map(p => String(p[colRede] || '').trim()).filter(r => r && r.toUpperCase() !== 'INDEPENDENTE')).size : 0;
+      document.getElementById('kpiParquesAvaliados').textContent = colMedia ? STATE.parques.filter(p => toNum(p[colMedia]) > 0).length : 0;
+    }
+
+    function montarCabecalhoParques() {
+      const cols = STATE.parquesCabecalhos.filter(c => !['LAT', 'LNG', '#', 'Nº', 'N°'].includes(c.trim().toUpperCase()));
+      if (!cols.length) return;
+      const colNome = getCol(['PARQUE'], cols) || cols[0];
+      const outrasCols = cols.filter(c => c !== colNome);
+
+      const mapaGrupos = {
+        'CONSERVAÇÃO': { nome: 'Segurança', cor: 'bg-[#3b78d8] text-white border-x border-[#1d2422]' },
+        'MANUTENÇÃO':  { nome: 'Segurança', cor: 'bg-[#3b78d8] text-white border-x border-[#1d2422]' },
+        'ATENDIMENTO': { nome: 'Cortesia',  cor: 'bg-[#f5cc53] text-[#111827] border-x border-[#1d2422]' },
+        'CONFORTO':    { nome: 'Cortesia',  cor: 'bg-[#f5cc53] text-[#111827] border-x border-[#1d2422]' },
+        'QUANTIDADE':  { nome: 'Show',      cor: 'bg-[#b81d18] text-white border-x border-[#1d2422]', sub: 'Atrações' },
+        'QUALIDADE':   { nome: 'Show',      cor: 'bg-[#b81d18] text-white border-x border-[#1d2422]', sub: 'Atrações' },
+        'ALIMENTAÇÃO': { nome: 'Show',      cor: 'bg-[#b81d18] text-white border-x border-[#1d2422]' },
+        'LIMPEZA':     { nome: 'Show',      cor: 'bg-[#b81d18] text-white border-x border-[#1d2422]' },
+        'OPERAÇÕES':   { nome: 'Eficiência',cor: 'bg-[#5f9946] text-white border-x border-[#1d2422]' },
+        'FILAS':       { nome: 'Eficiência',cor: 'bg-[#5f9946] text-white border-x border-[#1d2422]' },
+        'NAVEGAÇÃO':   { nome: 'Eficiência',cor: 'bg-[#5f9946] text-white border-x border-[#1d2422]' }
+      };
+
+      let linha1 = `<th rowspan="3" class="px-3 py-2 sticky left-0 bg-[#36423f] z-20 border-b border-[#1d2422]">#</th><th rowspan="3" class="px-3 py-2 sticky left-10 bg-[#36423f] z-20 border-b border-[#1d2422]">PARQUE</th>`;
+      let linha2 = '';
+      let linha3 = '';
+
+      for (let i = 0; i < outrasCols.length; i++) {
+        const u = outrasCols[i].trim().toUpperCase();
+        const grp = mapaGrupos[u];
+
+        if (grp) {
+          let span = 1;
+          while (i + span < outrasCols.length && mapaGrupos[outrasCols[i + span].trim().toUpperCase()]?.nome === grp.nome) {
+            span++;
+          }
+          linha1 += `<th colspan="${span}" class="px-3 py-1 text-center font-rct text-[10px] uppercase ${grp.cor} border-b border-[#1d2422]">${grp.nome}</th>`;
+
+          for (let j = i; j < i + span; j++) {
+            const subU = outrasCols[j].trim().toUpperCase();
+            const subGrp = mapaGrupos[subU]?.sub;
+
+            if (subGrp) {
+              let subSpan = 1;
+              while (j + subSpan < i + span && mapaGrupos[outrasCols[j + subSpan].trim().toUpperCase()]?.sub === subGrp) {
+                subSpan++;
+              }
+              linha2 += `<th colspan="${subSpan}" class="px-3 py-1 text-center bg-[#2b3532] text-[#fde8e8] border-x border-b border-[#1d2422]">${subGrp}</th>`;
+              for (let k = j; k < j + subSpan; k++) {
+                linha3 += `<th class="px-3 py-1 text-center bg-[#36423f] text-white border-x border-b border-[#1d2422]">${outrasCols[k]}</th>`;
+              }
+              j += subSpan - 1;
+            } else {
+              linha2 += `<th rowspan="2" class="px-3 py-1.5 text-center bg-[#36423f] text-white border-x border-b border-[#1d2422]">${outrasCols[j]}</th>`;
+            }
+          }
+          i += span - 1;
+        } else {
+          const corExtra = u === 'CUSTO BENEFÍCIO'
+            ? 'bg-[#d9822b] text-[#111827] font-rct text-[10px] uppercase text-center'
+            : ['MÉDIA', 'MEDIA', 'TOTAL'].includes(u)
+              ? 'bg-[#8c73b8] text-white font-rct text-[10px] uppercase text-center'
+              : 'bg-[#36423f] text-white';
+          linha1 += `<th rowspan="3" class="px-3 py-2 ${corExtra} border-x border-b border-[#1d2422]">${outrasCols[i]}</th>`;
+        }
+      }
+
+      document.getElementById('theadParques').innerHTML = `<tr>${linha1}</tr><tr>${linha2}</tr><tr>${linha3}</tr>`;
+    }
+
+    function renderTabelaParques() {
+      const cols = STATE.parquesCabecalhos.filter(c => !['LAT', 'LNG', '#', 'Nº', 'N°'].includes(c.trim().toUpperCase()));
+      if (!cols.length) return;
+      const termo = (document.getElementById('buscaParques').value || '').toLowerCase(), ordem = document.getElementById('ordemParques').value;
+      const colNome = getCol(['PARQUE'], cols) || cols[0], colMedia = getColMediaParque();
+      const outrasCols = cols.filter(c => c !== colNome);
+      const colCidade = getCol(['CIDADE'], cols), colStatus = getCol(['STATUS'], cols), colTipo = getCol(['TIPO'], cols), colRede = getCol(['REDE'], cols);
+
+      let lista = STATE.parques.filter(item => Object.values(item).some(v => String(v).toLowerCase().includes(termo)));
+      if (ordem === 'alfabetica') lista.sort((a, b) => String(a[colNome] || '').localeCompare(String(b[colNome] || '')));
+      else if (ordem === 'nota_desc' && colMedia) lista.sort((a, b) => (toNum(b[colMedia]) || -1) - (toNum(a[colMedia]) || -1));
+      else if (ordem === 'nota_asc' && colMedia) lista.sort((a, b) => (toNum(a[colMedia]) || 999) - (toNum(b[colMedia]) || 999));
+
+      const colsNotasParques = ['CONSERVAÇÃO', 'MANUTENÇÃO', 'ATENDIMENTO', 'CONFORTO', 'QUANTIDADE', 'QUALIDADE', 'ALIMENTAÇÃO', 'LIMPEZA', 'OPERAÇÕES', 'FILAS', 'NAVEGAÇÃO', 'CUSTO BENEFÍCIO'];
+
+      document.getElementById('tbodyParques').innerHTML = lista.map((item, idx) => {
+        const flag = getBandeira(getPaisItem(item, STATE.parquesCabecalhos));
+        const resto = outrasCols.map(c => {
+          const u = c.trim().toUpperCase(), val = item[c];
+          if (u === 'STATUS') {
+            const aberto = String(val || '').toLowerCase().includes('aberto');
+            const cor = !val ? 'bg-[#36423f] text-[#d1d5db] border-[#1d2422]' : aberto ? 'bg-[#22c55e] text-[#052e16] border-[#14532d]' : 'bg-[#ef4444] text-white border-[#7f1d1d]';
+            return `<td class="px-3 py-2"><span class="px-2 py-0.5 text-[11px] font-bold border ${cor}">${val || '-'}</span></td>`;
+          }
+          if (u === 'CONTINENTE') return `<td class="px-3 py-2">${getBadgeContinente(val)}</td>`;
+          if (u === 'MÉDIA' || u === 'MEDIA' || u === 'TOTAL') {
+            const n = toNum(val);
+            return `<td class="px-3 py-2 text-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold border ${getBadgeNotaRCT(n)}">${isNaN(n) ? '-' : formatarNota2(n)}</span></td>`;
+          }
+          if (colsNotasParques.includes(u)) {
+            return `<td class="px-3 py-2 text-center text-white">${val !== '' && val !== undefined ? val : '-'}</td>`;
+          }
+          return `<td class="px-3 py-2 text-white">${val !== '' && val !== undefined ? val : '-'}</td>`;
+        }).join('');
+        return `<tr onclick="abrirDetalhesParque(${item._linha})" class="hover:bg-[#8996a6] cursor-pointer"><td class="px-3 py-2 text-[#e2e8f0] font-mono sticky left-0 bg-[#657180]">${idx + 1}</td><td class="px-3 py-2 font-bold text-white rct-shadow-txt sticky left-10 bg-[#657180]">${flag} ${item[colNome] || '-'}</td>${resto}</tr>`;
+      }).join('');
+
+      document.getElementById('cardsParques').innerHTML = lista.map((item, idx) => {
+        const pais = getPaisItem(item, STATE.parquesCabecalhos);
+        const flag = getBandeira(pais);
+        const statusVal = colStatus ? item[colStatus] : '';
+        const aberto = String(statusVal || '').toLowerCase().includes('aberto');
+        const statusCor = !statusVal ? 'bg-[#36423f] text-[#d1d5db] border-[#1d2422]' : aberto ? 'bg-[#22c55e] text-[#052e16] border-[#14532d]' : 'bg-[#ef4444] text-white border-[#7f1d1d]';
+        const nota = colMedia ? toNum(item[colMedia]) : NaN;
+        const local = [colCidade && item[colCidade], pais].filter(Boolean).join(', ');
+        return `
+          <div onclick="abrirDetalhesParque(${item._linha})" class="rct-win-blue p-3 space-y-2 cursor-pointer active:translate-y-[1px]">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0">
+                <div class="text-sm font-bold text-white rct-shadow-txt leading-snug"><span class="text-[#fde047] font-mono mr-1">#${idx + 1}</span>${flag} ${item[colNome] || '-'}</div>
+                <div class="text-xs text-[#e2e8f0] mt-0.5 truncate">${local || '-'}</div>
+              </div>
+              <span class="font-rct px-2 py-1 text-[11px] font-bold border shrink-0 ${getBadgeNotaRCT(nota)}">${!isNaN(nota) && nota > 0 ? formatarNota2(nota) : '-'}</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-1 pt-1">
+              ${statusVal ? `<span class="px-2 py-0.5 text-[11px] font-bold border ${statusCor}">${statusVal}</span>` : ''}
+              ${colTipo && item[colTipo] ? `<span class="px-2 py-0.5 bg-[#4a535e] border border-[#9ba7b5] text-[11px] text-white">${item[colTipo]}</span>` : ''}
+              ${colRede && item[colRede] ? `<span class="px-2 py-0.5 bg-[#4a535e] border border-[#9ba7b5] text-[11px] text-[#e2e8f0]">${item[colRede]}</span>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function mudarModoRankingParques(modo) {
+      MODO_RANKING_PARQUES = modo;
+      const isMelhores = modo === 'melhores';
+      document.getElementById('tituloRankingParques').textContent = isMelhores ? 'Top 50 Melhores Parques' : 'Top 50 Piores Parques';
+      document.getElementById('btnParquesMelhores').className = isMelhores ? 'font-rct rct-btn-green px-3 py-1.5 text-[11px]' : 'font-rct rct-btn px-3 py-1.5 text-[11px]';
+      document.getElementById('btnParquesPiores').className = !isMelhores ? 'font-rct rct-btn-red px-3 py-1.5 text-[11px]' : 'font-rct rct-btn px-3 py-1.5 text-[11px]';
+      renderRankingsParques();
+    }
+
+    function renderRankingsParques() {
+      const cols = STATE.parquesCabecalhos;
+      const colNome = getCol(['PARQUE'], cols) || cols[0], colCidade = getCol(['CIDADE'], cols), colCont = getCol(['CONTINENTE'], cols), colTipo = getCol(['TIPO'], cols), colRede = getCol(['REDE'], cols), colMedia = getColMediaParque();
+      let elegiveis = STATE.parques.filter(p => colMedia && !isNaN(toNum(p[colMedia])) && toNum(p[colMedia]) > 0);
+      elegiveis.sort((a, b) => MODO_RANKING_PARQUES === 'melhores' ? (toNum(b[colMedia]) - toNum(a[colMedia])) : (toNum(a[colMedia]) - toNum(b[colMedia])));
+
+      const top50 = elegiveis.slice(0, 50), tbody = document.getElementById('tbodyRankingParques');
+      if (!top50.length) {
+        tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-10 text-center text-[#e2e8f0]">Nenhum parque com nota na coluna <strong>MÉDIA</strong> ainda.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = top50.map((p, idx) => `
+        <tr onclick="abrirDetalhesParque(${p._linha})" class="hover:bg-[#8996a6] cursor-pointer">
+          <td class="px-3 py-2.5 font-rct text-xs font-bold ${idx < 3 ? 'text-[#fde047]' : 'text-[#e2e8f0]'} rct-shadow-txt">#${idx + 1}</td>
+          <td class="px-3 py-2.5 text-center text-xl">${getBandeira(getPaisItem(p, cols))}</td>
+          <td class="px-3 py-2.5"><div class="font-bold text-white rct-shadow-txt">${p[colNome] || '-'}</div><div class="text-xs text-[#e2e8f0]">${colCidade && p[colCidade] ? p[colCidade] : ''}</div></td>
+          <td class="px-3 py-2.5">${getBadgeContinente(colCont ? p[colCont] : '')}</td>
+          <td class="px-3 py-2.5 text-xs text-white">${(colTipo && p[colTipo] ? p[colTipo] : '-')} ${colRede && p[colRede] ? '• ' + p[colRede] : ''}</td>
+          <td class="px-3 py-2.5 text-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold border ${getBadgeNotaRCT(toNum(p[colMedia]))}">${formatarNota2(p[colMedia])}</span></td>
+        </tr>`).join('');
+    }
+
+    function renderEstatisticasParques() {
+      const cols = STATE.parquesCabecalhos;
+      const statusDados = contarPorColuna(STATE.parques, getCol(['STATUS'], cols));
+      document.getElementById('resumoParquesStatus').textContent = statusDados.map(d => `${d[0]}: ${d[1]}`).join(' • ');
+      criarChart('parquesStatus', 'chartParquesStatus', { type: 'doughnut', data: { labels: statusDados.map(d => d[0]), datasets: [{ data: statusDados.map(d => d[1]), backgroundColor: ['#22c55e', '#ef4444', '#facc15'], borderColor: '#e9ecf0', borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#1f2937' } } } } });
+
+      const tipoDados = contarPorColuna(STATE.parques, getCol(['TIPO'], cols));
+      criarChart('parquesTipo', 'chartParquesTipo', { type: 'bar', data: { labels: tipoDados.map(d => d[0]), datasets: [{ data: tipoDados.map(d => d[1]), backgroundColor: '#798594', borderColor: '#4a535e', borderWidth: 1 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: CHART_GRID, ticks: CHART_TICKS }, y: { grid: { display: false }, ticks: CHART_TICKS } } } });
+
+      const redesDados = contarPorColuna(STATE.parques, getCol(['REDE'], cols)).filter(([nome]) => nome.toUpperCase() !== 'INDEPENDENTE').slice(0, 12);
+      criarChart('parquesRedes', 'chartParquesRedes', { type: 'bar', data: { labels: redesDados.map(d => d[0]), datasets: [{ data: redesDados.map(d => d[1]), backgroundColor: '#9b4e4c', borderColor: '#632c2a', borderWidth: 1 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: CHART_GRID, ticks: CHART_TICKS }, y: { grid: { display: false }, ticks: CHART_TICKS } } } });
+
+      setTimeout(renderMapaLeafletParques, 100);
+    }
+
+    function renderMapaLeafletParques() {
+      const cols = STATE.parquesCabecalhos;
+      const colNome = getCol(['PARQUE'], cols) || cols[0], colCidade = getCol(['CIDADE'], cols), colTipo = getCol(['TIPO'], cols), colRede = getCol(['REDE'], cols), colMedia = getColMediaParque();
+      const colLat = getCol(['LAT'], cols), colLng = getCol(['LNG'], cols);
+
+      if (LEAFLET_MAP) { LEAFLET_MAP.remove(); LEAFLET_MAP = null; }
+      LEAFLET_MAP = L.map('leafletParquesMap').setView([20, -20], 2);
+      L.tileLayer('https:' + '/' + '/' + 'tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap', maxZoom: 18
+      }).addTo(LEAFLET_MAP);
+
+      let marcados = 0;
+      STATE.parques.forEach(p => {
+        const lat = colLat ? toNum(p[colLat]) : NaN;
+        const lng = colLng ? toNum(p[colLng]) : NaN;
+        if (isNaN(lat) || isNaN(lng)) return;
+
+        marcados++;
+        const pais = getPaisItem(p, cols);
+        const media = colMedia ? formatarNota2(p[colMedia]) : '-';
+        const marker = L.circleMarker([lat, lng], {
+          radius: 6, fillColor: '#22c55e', color: '#052e16', weight: 1.5, opacity: 1, fillOpacity: 0.95
+        }).addTo(LEAFLET_MAP);
+
+        marker.bindPopup(`
+          <div class="text-xs space-y-1">
+            <div class="font-bold text-sm text-white rct-shadow-txt">${getBandeira(pais)} ${p[colNome]}</div>
+            <div class="text-[#e2e8f0]">${p[colCidade] || ''}, ${pais}</div>
+            <div class="text-[#d1d5db]">${p[colTipo] || '-'} • ${p[colRede] || '-'}</div>
+            <div class="pt-1 text-[#fde047] font-bold rct-shadow-txt">Média: ${media}</div>
+          </div>
+        `);
+      });
+
+      document.getElementById('badgeParquesMapa').textContent = marcados > 0
+        ? `${marcados} parques no mapa`
+        : 'Rode "preencherCoordenadasParques"';
+    }
+
+    // ================= MODAIS DE DETALHES =================
+    function abrirDetalhesMR(numLinha) {
+      const item = STATE.montanhas.find(c => c._linha === numLinha); if (!item) return;
+      const colParque = getCol(['PARQUE']), colCont = getCol(['CONTINENTE']), colCat = getCol(['CATEGORIA']), colMedia = getCol(['MÉDIA', 'MEDIA']), pais = getPaisItem(item);
+      const notasHTML = ['EMOÇÃO', 'INTENSIDADE', 'PERCURSO', 'CONFORTO'].map(n => {
+        const col = getCol([n]), val = col ? toNum(item[col]) : NaN, pct = isNaN(val) ? 0 : Math.min(100, (val / 5) * 100);
+        return `<div><div class="flex justify-between text-xs mb-1"><span class="font-bold text-white rct-shadow-txt">${n}</span><span class="font-rct text-xs text-[#fde047] rct-shadow-txt">${formatarNota2(val)} / 5</span></div><div class="rct-inset-red h-3.5 p-[1px]"><div class="h-full" style="width:${pct}%; background:${getCorBarraStat(val)};"></div></div></div>`;
+      }).join('');
+      const specsHTML = COLS_SPECS.map(s => { const col = getCol([s]); return `<div class="rct-inset-red p-2"><span class="font-rct text-[9px] uppercase text-[#fde8e8]">${s}</span><p class="text-xs font-bold text-white mt-0.5">${col && item[col] !== '' ? item[col] : '-'}</p></div>`; }).join('');
+      const box = document.getElementById('detalhesConteudo');
+      box.className = 'rct-win-red w-full max-w-2xl max-h-[90vh] overflow-y-auto';
+      box.innerHTML = `
+        <div class="rct-titlebar px-3 py-1.5 flex justify-between items-center sticky top-0">
+          <span class="w-5"></span>
+          <span class="font-rct text-xs truncate px-2">${getBandeira(pais)} ${getNomeCoaster(item)}</span>
+          <button onclick="fecharModal('modalDetalhes')" class="rct-close shrink-0">X</button>
+        </div>
+        <div class="p-4 space-y-4">
+          <div class="flex justify-between items-center border-b-2 border-[#632c2a] pb-3">
+            <div>
+              <p class="text-sm font-bold text-white rct-shadow-txt">${item[colParque] || ''}</p>
+              <p class="text-xs text-[#fde8e8]">${pais} ${colCont && item[colCont] ? '• ' + item[colCont] : ''} ${colCat && item[colCat] ? '• ' + item[colCat] : ''}</p>
+            </div>
+            <div class="text-right">
+              <span class="font-rct text-[9px] uppercase text-[#fde8e8] block">Média Final</span>
+              <span class="font-rct inline-block mt-0.5 px-2.5 py-1 text-base font-bold border ${getBadgeNotaRCT(toNum(item[colMedia]))}">${formatarMedia(item[colMedia])}</span>
+            </div>
+          </div>
+          <div><h3 class="font-rct text-[11px] uppercase text-[#fde047] rct-shadow-txt mb-2">Avaliação</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${notasHTML}</div></div>
+          <div><h3 class="font-rct text-[11px] uppercase text-[#fde047] rct-shadow-txt mb-2">Ficha Técnica</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-2">${specsHTML}</div></div>
+        </div>`;
+      document.getElementById('modalDetalhes').classList.remove('hidden');
+    }
+
+    function abrirDetalhesParque(numLinha) {
+      const p = STATE.parques.find(x => x._linha === numLinha); if (!p) return;
+      const cols = STATE.parquesCabecalhos;
+      const colNome = getCol(['PARQUE'], cols) || cols[0], colCidade = getCol(['CIDADE'], cols), colCont = getCol(['CONTINENTE'], cols), colTipo = getCol(['TIPO'], cols), colRede = getCol(['REDE'], cols), colMedia = getColMediaParque();
+      const pais = getPaisItem(p, cols);
+
+      const grupos = [
+        { titulo: 'Segurança', itens: ['Conservação', 'Manutenção'] },
+        { titulo: 'Cortesia', itens: ['Atendimento', 'Conforto'] },
+        { titulo: 'Show', itens: ['Quantidade', 'Qualidade', 'Alimentação', 'Limpeza'] },
+        { titulo: 'Eficiência', itens: ['Operações', 'Filas', 'Navegação'] },
+        { titulo: 'Custo benefício', itens: ['Custo benefício'] }
+      ];
+
+      const blocosHTML = grupos.map(g => {
+        const linhas = g.itens.map(nome => {
+          const col = getCol([nome.toUpperCase()], cols);
+          const val = col ? toNum(p[col]) : NaN;
+          const pct = isNaN(val) ? 0 : Math.min(100, (val / 5) * 100);
+          return `<div><div class="flex justify-between text-xs mb-1"><span class="text-[#e2f0d5] font-semibold">${nome}</span><span class="font-rct text-[11px] text-white rct-shadow-txt">${isNaN(val) ? '-' : formatarNota2(val)}</span></div><div class="bg-[#36423f] border border-[#1d2422] h-2.5"><div class="h-full" style="width:${pct}%; background:${getCorBarraStat(val)};"></div></div></div>`;
+        }).join('');
+        return `<div class="rct-inset-green p-3 space-y-2"><h4 class="font-rct text-[11px] uppercase text-[#fde047] rct-shadow-txt border-b border-[#9cb87b] pb-1">${g.titulo}</h4>${linhas}</div>`;
+      }).join('');
+
+      const box = document.getElementById('detalhesConteudo');
+      box.className = 'rct-win-green w-full max-w-2xl max-h-[90vh] overflow-y-auto';
+      box.innerHTML = `
+        <div class="rct-titlebar px-3 py-1.5 flex justify-between items-center sticky top-0">
+          <span class="w-5"></span>
+          <span class="font-rct text-xs truncate px-2">${getBandeira(pais)} ${p[colNome] || '-'}</span>
+          <button onclick="fecharModal('modalDetalhes')" class="rct-close shrink-0">X</button>
+        </div>
+        <div class="p-4 space-y-4">
+          <div class="flex justify-between items-center border-b-2 border-[#44592c] pb-3">
+            <div>
+              <p class="text-sm font-bold text-white rct-shadow-txt">${colCidade && p[colCidade] ? p[colCidade] + ' • ' : ''}${pais}</p>
+              <p class="text-xs text-[#e2f0d5]">${colCont && p[colCont] ? p[colCont] + ' • ' : ''}${colTipo && p[colTipo] ? p[colTipo] : ''} ${colRede && p[colRede] ? '• ' + p[colRede] : ''}</p>
+            </div>
+            <div class="text-right">
+              <span class="font-rct text-[9px] uppercase text-[#e2f0d5] block">Média</span>
+              <span class="font-rct inline-block mt-0.5 px-2.5 py-1 text-base font-bold border ${getBadgeNotaRCT(colMedia ? toNum(p[colMedia]) : NaN)}">${colMedia ? formatarNota2(p[colMedia]) : '-'}</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${blocosHTML}</div>
+        </div>`;
+      document.getElementById('modalDetalhes').classList.remove('hidden');
+    }
+
+    // ================= FORMULÁRIOS =================
+    function montarFormularioMR() {
+      const form = document.getElementById('formMontanha'), gerais = [], specs = [], notas = [];
+      STATE.cabecalhos.forEach(col => {
+        const u = col.trim().toUpperCase();
+        if (/^20\d{2}$/.test(u) || u.includes('INSIRA AQUI')) return;
+        if (COLS_NOTAS.includes(u)) notas.push(col); else if (COLS_SPECS.includes(u)) specs.push(col); else gerais.push(col);
+      });
+      const renderCampo = (col, isNum = false, readonly = false, onInputFn = '') => {
+        const u = col.trim().toUpperCase(), opcoes = STATE.listas[u];
+        if (opcoes && opcoes.length) {
+          const listId = 'dl_' + u.replace(/\W/g, '');
+          return `<div><label class="block text-xs font-bold text-white rct-shadow-txt mb-1">${col}</label><input name="${col}" list="${listId}" class="rct-input w-full px-2.5 py-1.5 text-sm"><datalist id="${listId}">${opcoes.map(o => `<option value="${o}">`).join('')}</datalist></div>`;
+        }
+        const estiloAuto = readonly ? 'bg-[#36423f] text-[#fde047] font-bold cursor-not-allowed' : '';
+        return `<div><label class="block text-xs font-bold text-white rct-shadow-txt mb-1">${col}</label><input name="${col}" data-col="${u}" type="${isNum && !readonly ? 'number' : 'text'}" step="any" ${readonly ? 'readonly placeholder="Automático"' : ''} ${onInputFn ? `oninput="${onInputFn}"` : ''} class="rct-input w-full px-2.5 py-1.5 text-sm ${estiloAuto}"></div>`;
+      };
+      form.innerHTML = `
+        <div><h3 class="font-rct text-xs uppercase text-[#fde047] rct-shadow-txt mb-2">1. Dados Gerais</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">${gerais.map(c => renderCampo(c)).join('')}</div></div>
+        <div><h3 class="font-rct text-xs uppercase text-[#fde047] rct-shadow-txt mb-2">2. Ficha Técnica</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-2.5">${specs.map(c => { const u = c.trim().toUpperCase(); return renderCampo(c, true, u === 'IDADE', (u === 'ABERTA' || u === 'FECHADA') ? 'calcularIdade()' : ''); }).join('')}</div></div>
+        <div><h3 class="font-rct text-xs uppercase text-[#fde047] rct-shadow-txt mb-2">3. Suas Notas (0 a 5)</h3><div class="grid grid-cols-2 md:grid-cols-5 gap-2.5">${notas.map(c => { const u = c.trim().toUpperCase(); return renderCampo(c, true, u === 'MÉDIA', u !== 'MÉDIA' ? 'calcularMedia()' : ''); }).join('')}</div></div>
+        <div class="flex justify-end gap-2 pt-3 border-t-2 border-[#632c2a]"><button type="button" onclick="fecharModal('modalCadastroMR')" class="font-rct rct-btn px-4 py-2 text-xs">Cancelar</button><button type="submit" id="btnSalvarMR" class="font-rct rct-btn-green px-5 py-2 text-xs">Salvar na Planilha</button></div>`;
+    }
+
+    function montarFormularioParque() {
+      const form = document.getElementById('formParque');
+      const cols = STATE.parquesCabecalhos.filter(c => !['LAT', 'LNG', '#', 'Nº', 'N°'].includes(c.trim().toUpperCase()));
+      if (!cols.length) return;
+      const fixas = ['PARQUE', 'STATUS', 'CIDADE', 'PAÍS', 'PAIS', 'CONTINENTE', 'TIPO', 'REDE'];
+      const dados = cols.filter(c => fixas.includes(c.trim().toUpperCase()));
+      const notas = cols.filter(c => !fixas.includes(c.trim().toUpperCase()));
+
+      form.innerHTML = `
+        <div><h3 class="font-rct text-xs uppercase text-[#fde047] rct-shadow-txt mb-2">1. Dados do Parque</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">${dados.map(c => `<div><label class="block text-xs font-bold text-white rct-shadow-txt mb-1">${c}</label><input name="${c}" type="text" class="rct-input w-full px-2.5 py-1.5 text-sm"></div>`).join('')}</div></div>
+        <div><h3 class="font-rct text-xs uppercase text-[#fde047] rct-shadow-txt mb-2">2. Avaliação (4 Chaves + Custo benefício)</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-2.5">${notas.map(c => {
+          const u = c.trim().toUpperCase();
+          const isMedia = ['MÉDIA', 'MEDIA', 'TOTAL'].includes(u);
+          return `<div><label class="block text-xs font-bold text-white rct-shadow-txt mb-1">${c}</label><input name="${c}" ${isMedia ? 'id="inputMediaParque" type="text" readonly placeholder="Automático" class="rct-input w-full px-2.5 py-1.5 text-sm bg-[#36423f] text-[#fde047] font-bold cursor-not-allowed"' : 'data-nota-parque="1" type="number" step="any" oninput="calcularMediaParque()" class="rct-input w-full px-2.5 py-1.5 text-sm"'}></div>`;
+        }).join('')}</div></div>
+        <div class="flex justify-end gap-2 pt-3 border-t-2 border-[#4a535e]"><button type="button" onclick="fecharModal('modalCadastroParque')" class="font-rct rct-btn px-4 py-2 text-xs">Cancelar</button><button type="submit" id="btnSalvarParque" class="font-rct rct-btn-green px-5 py-2 text-xs">Salvar Parque</button></div>`;
+    }
+
+    function calcularMedia() {
+      const vals = ['EMOÇÃO', 'INTENSIDADE', 'PERCURSO', 'CONFORTO'].map(c => parseFloat(document.querySelector(`[data-col="${c}"]`)?.value)).filter(v => !isNaN(v));
+      const input = document.querySelector('[data-col="MÉDIA"]');
+      if (input) input.value = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(3).replace('.', ',') : '';
+    }
+
+    function calcularMediaParque() {
+      const vals = Array.from(document.querySelectorAll('[data-nota-parque="1"]')).map(el => parseFloat(el.value)).filter(v => !isNaN(v));
+      const input = document.getElementById('inputMediaParque');
+      if (input) input.value = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2).replace('.', ',') : '';
+    }
+
+    function calcularIdade() {
+      const aberta = parseInt(document.querySelector('[data-col="ABERTA"]')?.value), fechada = parseInt(document.querySelector('[data-col="FECHADA"]')?.value);
+      const input = document.querySelector('[data-col="IDADE"]');
+      if (!input || isNaN(aberta)) return;
+      input.value = Math.max(0, (!isNaN(fechada) ? fechada : new Date().getFullYear()) - aberta);
+    }
+
+    function fecharModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    async function salvarMontanha(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSalvarMR'); btn.disabled = true; btn.textContent = 'Salvando...';
+      const novo = {}; new FormData(e.target).forEach((v, k) => novo[k] = v.trim());
+      try {
+        await fetch(API_URL, { method: 'POST', body: JSON.stringify({ acao: 'adicionarMontanhaRussa', dados: novo }) });
+        fecharModal('modalCadastroMR'); e.target.reset();
+        await carregarDadosAPI();
+      } catch (err) {
+        alert('Erro: ' + err.message);
+      }
+      btn.disabled = false; btn.textContent = 'Salvar na Planilha';
+    }
+
+    async function salvarParque(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSalvarParque'); btn.disabled = true; btn.textContent = 'Salvando...';
+      const novo = {}; new FormData(e.target).forEach((v, k) => novo[k] = v.trim());
+      try {
+        await fetch(API_URL, { method: 'POST', body: JSON.stringify({ acao: 'adicionarParque', dados: novo }) });
+        fecharModal('modalCadastroParque'); e.target.reset();
+        await carregarDadosAPI();
+      } catch (err) {
+        alert('Erro: ' + err.message);
+      }
+      btn.disabled = false; btn.textContent = 'Salvar Parque';
+    }
+  </script>
+</body>
+</html>
