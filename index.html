@@ -19,12 +19,12 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     @font-face {
-  font-family: 'RCT2';
-  src: url('./fonts/rct2.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  size-adjust: 165%;
-}
+      font-family: 'RCT2';
+      src: url('./fonts/rct2.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+      size-adjust: 165%;
+    }
 
     :root {
       --rct-bg: #2a472a;
@@ -63,11 +63,21 @@
     .rct-shadow-txt { text-shadow: 1px 1px 0px #000000; }
 
     .px-icon {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       display: inline-block;
       vertical-align: middle;
       image-rendering: pixelated;
+      flex-shrink: 0;
+    }
+
+    .mood-icon {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+      vertical-align: middle;
+      image-rendering: pixelated;
+      margin-left: 5px;
       flex-shrink: 0;
     }
 
@@ -257,11 +267,11 @@
 
         <nav class="flex gap-1.5">
           <button id="mainBtnMR" onclick="trocarAbaMae('mr')" class="font-rct rct-btn-red px-3 py-1.5 text-xs flex items-center gap-1.5">
-            <svg class="px-icon" viewBox="0 0 16 16" fill="none"><path d="M1 12h14v2H1v-2zm2-3h2v3H3V9zm8-4h2v7h-2V5zM7 7h2v5H7V7z" fill="#2b1414"/><path d="M1 11l3-3 3-1 3-3 4 2v2l-4-2-3 3-3 1-3 2v-1z" fill="#facc15"/><rect x="8" y="2" width="4" height="3" fill="#ef4444"/><rect x="9" y="1" width="2" height="1" fill="#fde047"/></svg>
+            <img src="./icons/coaster.png" class="px-icon" alt="">
             Montanhas-Russas
           </button>
           <button id="mainBtnParques" onclick="trocarAbaMae('parques')" class="font-rct rct-btn px-3 py-1.5 text-xs flex items-center gap-1.5">
-            <svg class="px-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="5" width="3" height="9" fill="#d4c4a8"/><rect x="11" y="5" width="3" height="9" fill="#d4c4a8"/><path d="M1 5l7-4 7 4v2H1V5z" fill="#b84437"/><rect x="6" y="7" width="4" height="7" fill="#36423f"/><rect x="7" y="2" width="2" height="2" fill="#facc15"/></svg>
+            <img src="./icons/park.png" class="px-icon" alt="">
             Parques
           </button>
         </nav>
@@ -603,6 +613,15 @@
       return 'bg-[#ef4444] text-white border-[#7f1d1d]';
     }
 
+    function getMoodIcon(n) {
+      if (isNaN(n) || n <= 0) return '';
+      let arquivo = 'mood_angry.webp';
+      if (n >= 4.5) arquivo = 'mood_happy_green.webp';
+      else if (n >= 3.5) arquivo = 'mood_content.webp';
+      else if (n >= 2.5) arquivo = 'mood_neutral.webp';
+      return `<img src="./icons/${arquivo}" class="mood-icon" alt="">`;
+    }
+
     function getCorBarraStat(n) {
       if (isNaN(n)) return '#9ca3af';
       if (n >= 4.0) return '#22c55e';
@@ -674,7 +693,30 @@
       if (aba === 'estatisticas') renderEstatisticasParques();
     }
 
-    function abrirModalCadastroAtual() { document.getElementById(ABA_MAE === 'mr' ? 'modalCadastroMR' : 'modalCadastroParque').classList.remove('hidden'); }
+    function abrirModalCadastroAtual() {
+      if (ABA_MAE === 'mr') {
+        const colNum = getCol(['Nº', 'N°', '#']);
+        const nums = STATE.montanhas
+          .map(m => toNum(colNum ? m[colNum] : NaN))
+          .filter(n => !isNaN(n));
+        const proximoMR = (nums.length ? Math.max(...nums) : STATE.montanhas.length) + 1;
+
+        const inputNumMR = document.querySelector('#formMontanha [data-col="Nº"], #formMontanha [data-col="N°"], #formMontanha [data-col="#"]');
+        if (inputNumMR) inputNumMR.value = proximoMR;
+
+        document.getElementById('modalCadastroMR').classList.remove('hidden');
+      } else {
+        const numsParque = STATE.parques
+          .map(p => toNum(p['#'] ?? p['Nº'] ?? p['N°']))
+          .filter(n => !isNaN(n));
+        const proximoParque = (numsParque.length ? Math.max(...numsParque) : STATE.parques.length) + 1;
+
+        const inputNumParque = document.querySelector('#formParque input[name="#"], #formParque input[name="Nº"], #formParque input[name="N°"]');
+        if (inputNumParque) inputNumParque.value = proximoParque;
+
+        document.getElementById('modalCadastroParque').classList.remove('hidden');
+      }
+    }
 
     // ================= HELPERS =================
     function getCol(possiveis, listaCols = STATE.cabecalhos) { return listaCols.find(c => possiveis.includes(c.trim().toUpperCase())); }
@@ -721,7 +763,7 @@
     }
 
     function montarCabecalhoCatalogo() {
-      document.getElementById('theadCatalogo').innerHTML = `<tr><th class="px-3 py-2.5 sticky left-0 bg-[#36423f] z-20">Nº</th><th class="px-3 py-2.5 sticky left-10 bg-[#36423f] z-20">Montanha-Russa</th>${COLS_CATALOGO.map(c => `<th class="px-3 py-2.5">${c}</th>`).join('')}</tr>`;
+      document.getElementById('theadCatalogo').innerHTML = `<tr><th class="px-3 py-2.5 sticky left-0 bg-[#36423f] z-20">Nº</th><th class="px-3 py-2.5 sticky left-10 bg-[#36423f] z-20">Montanha-Russa</th>${COLS_CATALOGO.map(c => `<th class="px-3 py-2.5 text-center">${c}</th>`).join('')}</tr>`;
     }
 
     function renderTabela() {
@@ -745,7 +787,7 @@
           const val = colReal ? item[colReal] : '';
           if (nome === 'MÉDIA') {
             const m = toNum(val);
-            return `<td class="px-3 py-2 text-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold border ${getBadgeNotaRCT(m)}">${formatarMedia(m)}</span></td>`;
+            return `<td class="px-3 py-2 text-center"><span class="inline-flex items-center justify-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold border ${getBadgeNotaRCT(m)}">${formatarMedia(m)}</span>${getMoodIcon(m)}</span></td>`;
           }
           if (['EMOÇÃO', 'INTENSIDADE', 'PERCURSO', 'CONFORTO'].includes(nome)) return `<td class="px-3 py-2 text-center text-[#fde8e8]">${formatarNota2(val)}</td>`;
           return `<td class="px-3 py-2 text-white">${val !== '' && val !== undefined ? val : '-'}</td>`;
@@ -765,7 +807,7 @@
                 <div class="text-sm font-bold text-white rct-shadow-txt leading-snug"><span class="text-[#fde047] font-mono mr-1">#${num}</span>${getBandeira(pais)} ${getNomeCoaster(item)}</div>
                 <div class="text-xs text-[#fde8e8] mt-0.5 truncate">${colParque && item[colParque] ? item[colParque] : '-'}${pais ? ' • ' + pais : ''}</div>
               </div>
-              <span class="font-rct px-2 py-1 text-[11px] font-bold border shrink-0 ${getBadgeNotaRCT(m)}">${formatarMedia(m)}</span>
+              <span class="inline-flex items-center shrink-0"><span class="font-rct px-2 py-1 text-[11px] font-bold border ${getBadgeNotaRCT(m)}">${formatarMedia(m)}</span>${getMoodIcon(m)}</span>
             </div>
             ${tags.length ? `<div class="flex flex-wrap gap-1 pt-1">${tags.map(t => `<span class="px-2 py-0.5 bg-[#632c2a] border border-[#bd706e] text-[11px] text-white">${t}</span>`).join('')}</div>` : ''}
           </div>`;
@@ -816,15 +858,18 @@
         return 0;
       });
       const topLista = elegiveis.slice(0, MODO_RANKING === 'brasil' ? 10 : 50);
-      document.getElementById('tbodyRanking').innerHTML = topLista.map((item, idx) => `
+      document.getElementById('tbodyRanking').innerHTML = topLista.map((item, idx) => {
+        const m = toNum(item[colMedia]);
+        return `
         <tr onclick="abrirDetalhesMR(${item._linha})" class="hover:bg-[#a85856] cursor-pointer">
           <td class="px-3 py-2.5 font-rct text-xs font-bold ${idx < 3 ? 'text-[#fde047]' : 'text-[#fde8e8]'} rct-shadow-txt">#${idx + 1}</td>
           <td class="px-3 py-2.5 text-center text-xl">${getBandeira(getPaisItem(item))}</td>
           <td class="px-3 py-2.5"><div class="font-bold text-white rct-shadow-txt">${getNomeCoaster(item)}</div><div class="text-xs text-[#fde8e8]">${item[colParque] || ''}</div></td>
           <td class="px-3 py-2.5">${getBadgeContinente(colCont ? item[colCont] : '')}</td>
           <td class="px-3 py-2.5">${calcularMotivoDesempate(topLista, idx, criteriosInfo)}</td>
-          <td class="px-3 py-2.5 text-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold border ${getBadgeNotaRCT(toNum(item[colMedia]))}">${formatarMedia(item[colMedia])}</span></td>
-        </tr>`).join('');
+          <td class="px-3 py-2.5 text-center"><span class="inline-flex items-center justify-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold border ${getBadgeNotaRCT(m)}">${formatarMedia(m)}</span>${getMoodIcon(m)}</span></td>
+        </tr>`;
+      }).join('');
     }
 
     function renderEstatisticas() {
@@ -874,7 +919,8 @@
       const maisAndadas = STATE.montanhas.filter(c => colVoltas && toNum(c[colVoltas]) > 0).sort((a, b) => (toNum(b[colVoltas]) || 0) - (toNum(a[colVoltas]) || 0)).slice(0, 20);
       document.getElementById('tbodyMaisAndadas').innerHTML = maisAndadas.map((item, idx) => {
         const metros = colDist ? toNum(item[colDist]) : NaN;
-        return `<tr onclick="abrirDetalhesMR(${item._linha})" class="hover:bg-[#a85856] cursor-pointer"><td class="px-3 py-2 font-rct text-xs font-bold ${idx < 3 ? 'text-[#fde047]' : 'text-[#fde8e8]'}">#${idx + 1}</td><td class="px-3 py-2"><div class="font-bold text-white rct-shadow-txt">${getBandeira(getPaisItem(item))} ${getNomeCoaster(item)}</div><div class="text-xs text-[#fde8e8]">${item[colParque] || ''}</div></td><td class="px-3 py-2 text-white">${item[colFab] || '-'}</td><td class="px-3 py-2 text-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold bg-[#36423f] text-[#86efac] border border-[#1d2422]">${toNum(item[colVoltas])}x</span></td><td class="px-3 py-2 text-right text-white">${!isNaN(metros) && metros > 0 ? (metros / 1000).toFixed(2).replace('.', ',') + ' km' : '-'}</td><td class="px-3 py-2 text-center font-bold text-[#fde047]">${formatarMedia(item[colMedia])}</td></tr>`;
+        const m = toNum(item[colMedia]);
+        return `<tr onclick="abrirDetalhesMR(${item._linha})" class="hover:bg-[#a85856] cursor-pointer"><td class="px-3 py-2 font-rct text-xs font-bold ${idx < 3 ? 'text-[#fde047]' : 'text-[#fde8e8]'}">#${idx + 1}</td><td class="px-3 py-2"><div class="font-bold text-white rct-shadow-txt">${getBandeira(getPaisItem(item))} ${getNomeCoaster(item)}</div><div class="text-xs text-[#fde8e8]">${item[colParque] || ''}</div></td><td class="px-3 py-2 text-white">${item[colFab] || '-'}</td><td class="px-3 py-2 text-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold bg-[#36423f] text-[#86efac] border border-[#1d2422]">${toNum(item[colVoltas])}x</span></td><td class="px-3 py-2 text-right text-white">${!isNaN(metros) && metros > 0 ? (metros / 1000).toFixed(2).replace('.', ',') + ' km' : '-'}</td><td class="px-3 py-2 text-center font-bold text-[#fde047]"><span class="inline-flex items-center justify-center">${formatarMedia(m)}${getMoodIcon(m)}</span></td></tr>`;
       }).join('');
     }
 
@@ -976,7 +1022,7 @@
             ? 'bg-[#d9822b] text-[#111827] font-rct text-[10px] uppercase text-center'
             : ['MÉDIA', 'MEDIA', 'TOTAL'].includes(u)
               ? 'bg-[#8c73b8] text-white font-rct text-[10px] uppercase text-center'
-              : 'bg-[#36423f] text-white';
+              : 'bg-[#36423f] text-white text-center';
           linha1 += `<th rowspan="3" class="px-3 py-2 ${corExtra} border-x border-b border-[#1d2422]">${outrasCols[i]}</th>`;
         }
       }
@@ -1006,12 +1052,12 @@
           if (u === 'STATUS') {
             const aberto = String(val || '').toLowerCase().includes('aberto');
             const cor = !val ? 'bg-[#36423f] text-[#d1d5db] border-[#1d2422]' : aberto ? 'bg-[#22c55e] text-[#052e16] border-[#14532d]' : 'bg-[#ef4444] text-white border-[#7f1d1d]';
-            return `<td class="px-3 py-2"><span class="px-2 py-0.5 text-[11px] font-bold border ${cor}">${val || '-'}</span></td>`;
+            return `<td class="px-3 py-2 text-center"><span class="px-2 py-0.5 text-[11px] font-bold border ${cor}">${val || '-'}</span></td>`;
           }
-          if (u === 'CONTINENTE') return `<td class="px-3 py-2">${getBadgeContinente(val)}</td>`;
+          if (u === 'CONTINENTE') return `<td class="px-3 py-2 text-center">${getBadgeContinente(val)}</td>`;
           if (u === 'MÉDIA' || u === 'MEDIA' || u === 'TOTAL') {
             const n = toNum(val);
-            return `<td class="px-3 py-2 text-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold border ${getBadgeNotaRCT(n)}">${isNaN(n) ? '-' : formatarNota2(n)}</span></td>`;
+            return `<td class="px-3 py-2 text-center"><span class="inline-flex items-center justify-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold border ${getBadgeNotaRCT(n)}">${isNaN(n) ? '-' : formatarNota2(n)}</span>${getMoodIcon(n)}</span></td>`;
           }
           if (colsNotasParques.includes(u)) {
             return `<td class="px-3 py-2 text-center text-white">${val !== '' && val !== undefined ? val : '-'}</td>`;
@@ -1036,7 +1082,7 @@
                 <div class="text-sm font-bold text-white rct-shadow-txt leading-snug"><span class="text-[#fde047] font-mono mr-1">#${idx + 1}</span>${flag} ${item[colNome] || '-'}</div>
                 <div class="text-xs text-[#e2e8f0] mt-0.5 truncate">${local || '-'}</div>
               </div>
-              <span class="font-rct px-2 py-1 text-[11px] font-bold border shrink-0 ${getBadgeNotaRCT(nota)}">${!isNaN(nota) && nota > 0 ? formatarNota2(nota) : '-'}</span>
+              <span class="inline-flex items-center shrink-0"><span class="font-rct px-2 py-1 text-[11px] font-bold border ${getBadgeNotaRCT(nota)}">${!isNaN(nota) && nota > 0 ? formatarNota2(nota) : '-'}</span>${getMoodIcon(nota)}</span>
             </div>
             <div class="flex flex-wrap items-center gap-1 pt-1">
               ${statusVal ? `<span class="px-2 py-0.5 text-[11px] font-bold border ${statusCor}">${statusVal}</span>` : ''}
@@ -1067,15 +1113,18 @@
         tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-10 text-center text-[#e2e8f0]">Nenhum parque com nota na coluna <strong>MÉDIA</strong> ainda.</td></tr>`;
         return;
       }
-      tbody.innerHTML = top50.map((p, idx) => `
+      tbody.innerHTML = top50.map((p, idx) => {
+        const n = toNum(p[colMedia]);
+        return `
         <tr onclick="abrirDetalhesParque(${p._linha})" class="hover:bg-[#8996a6] cursor-pointer">
           <td class="px-3 py-2.5 font-rct text-xs font-bold ${idx < 3 ? 'text-[#fde047]' : 'text-[#e2e8f0]'} rct-shadow-txt">#${idx + 1}</td>
           <td class="px-3 py-2.5 text-center text-xl">${getBandeira(getPaisItem(p, cols))}</td>
           <td class="px-3 py-2.5"><div class="font-bold text-white rct-shadow-txt">${p[colNome] || '-'}</div><div class="text-xs text-[#e2e8f0]">${colCidade && p[colCidade] ? p[colCidade] : ''}</div></td>
           <td class="px-3 py-2.5">${getBadgeContinente(colCont ? p[colCont] : '')}</td>
           <td class="px-3 py-2.5 text-xs text-white">${(colTipo && p[colTipo] ? p[colTipo] : '-')} ${colRede && p[colRede] ? '• ' + p[colRede] : ''}</td>
-          <td class="px-3 py-2.5 text-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold border ${getBadgeNotaRCT(toNum(p[colMedia]))}">${formatarNota2(p[colMedia])}</span></td>
-        </tr>`).join('');
+          <td class="px-3 py-2.5 text-center"><span class="inline-flex items-center justify-center"><span class="font-rct px-2 py-0.5 text-[11px] font-bold border ${getBadgeNotaRCT(n)}">${formatarNota2(n)}</span>${getMoodIcon(n)}</span></td>
+        </tr>`;
+      }).join('');
     }
 
     function renderEstatisticasParques() {
@@ -1136,6 +1185,7 @@
     function abrirDetalhesMR(numLinha) {
       const item = STATE.montanhas.find(c => c._linha === numLinha); if (!item) return;
       const colParque = getCol(['PARQUE']), colCont = getCol(['CONTINENTE']), colCat = getCol(['CATEGORIA']), colMedia = getCol(['MÉDIA', 'MEDIA']), pais = getPaisItem(item);
+      const mVal = toNum(item[colMedia]);
       const notasHTML = ['EMOÇÃO', 'INTENSIDADE', 'PERCURSO', 'CONFORTO'].map(n => {
         const col = getCol([n]), val = col ? toNum(item[col]) : NaN, pct = isNaN(val) ? 0 : Math.min(100, (val / 5) * 100);
         return `<div><div class="flex justify-between text-xs mb-1"><span class="font-bold text-white rct-shadow-txt">${n}</span><span class="font-rct text-xs text-[#fde047] rct-shadow-txt">${formatarNota2(val)} / 5</span></div><div class="rct-inset-red h-3.5 p-[1px]"><div class="h-full" style="width:${pct}%; background:${getCorBarraStat(val)};"></div></div></div>`;
@@ -1157,7 +1207,7 @@
             </div>
             <div class="text-right">
               <span class="font-rct text-[9px] uppercase text-[#fde8e8] block">Média Final</span>
-              <span class="font-rct inline-block mt-0.5 px-2.5 py-1 text-base font-bold border ${getBadgeNotaRCT(toNum(item[colMedia]))}">${formatarMedia(item[colMedia])}</span>
+              <span class="inline-flex items-center mt-0.5"><span class="font-rct px-2.5 py-1 text-base font-bold border ${getBadgeNotaRCT(mVal)}">${formatarMedia(mVal)}</span>${getMoodIcon(mVal)}</span>
             </div>
           </div>
           <div><h3 class="font-rct text-[11px] uppercase text-[#fde047] rct-shadow-txt mb-2">Avaliação</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-3">${notasHTML}</div></div>
@@ -1171,6 +1221,7 @@
       const cols = STATE.parquesCabecalhos;
       const colNome = getCol(['PARQUE'], cols) || cols[0], colCidade = getCol(['CIDADE'], cols), colCont = getCol(['CONTINENTE'], cols), colTipo = getCol(['TIPO'], cols), colRede = getCol(['REDE'], cols), colMedia = getColMediaParque();
       const pais = getPaisItem(p, cols);
+      const mVal = colMedia ? toNum(p[colMedia]) : NaN;
 
       const grupos = [
         { titulo: 'Segurança', itens: ['Conservação', 'Manutenção'] },
@@ -1206,7 +1257,7 @@
             </div>
             <div class="text-right">
               <span class="font-rct text-[9px] uppercase text-[#e2f0d5] block">Média</span>
-              <span class="font-rct inline-block mt-0.5 px-2.5 py-1 text-base font-bold border ${getBadgeNotaRCT(colMedia ? toNum(p[colMedia]) : NaN)}">${colMedia ? formatarNota2(p[colMedia]) : '-'}</span>
+              <span class="inline-flex items-center mt-0.5"><span class="font-rct px-2.5 py-1 text-base font-bold border ${getBadgeNotaRCT(mVal)}">${colMedia ? formatarNota2(mVal) : '-'}</span>${getMoodIcon(mVal)}</span>
             </div>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${blocosHTML}</div>
@@ -1226,7 +1277,7 @@
         const u = col.trim().toUpperCase(), opcoes = STATE.listas[u];
         if (opcoes && opcoes.length) {
           const listId = 'dl_' + u.replace(/\W/g, '');
-          return `<div><label class="block text-xs font-bold text-white rct-shadow-txt mb-1">${col}</label><input name="${col}" list="${listId}" class="rct-input w-full px-2.5 py-1.5 text-sm"><datalist id="${listId}">${opcoes.map(o => `<option value="${o}">`).join('')}</datalist></div>`;
+          return `<div><label class="block text-xs font-bold text-white rct-shadow-txt mb-1">${col}</label><input name="${col}" data-col="${u}" list="${listId}" class="rct-input w-full px-2.5 py-1.5 text-sm"><datalist id="${listId}">${opcoes.map(o => `<option value="${o}">`).join('')}</datalist></div>`;
         }
         const estiloAuto = readonly ? 'bg-[#36423f] text-[#fde047] font-bold cursor-not-allowed' : '';
         return `<div><label class="block text-xs font-bold text-white rct-shadow-txt mb-1">${col}</label><input name="${col}" data-col="${u}" type="${isNum && !readonly ? 'number' : 'text'}" step="any" ${readonly ? 'readonly placeholder="Automático"' : ''} ${onInputFn ? `oninput="${onInputFn}"` : ''} class="rct-input w-full px-2.5 py-1.5 text-sm ${estiloAuto}"></div>`;
